@@ -2,14 +2,14 @@ import typer
 from typing import List
 from time import sleep
 from pathlib import Path
-from os import listdir
+from os import getcwd, listdir
 from utils import get_conn, dump_query
 import re
 
 # DEFAULT Constants
-ROOT_DIR = Path(__file__).parent
+ROOT_DIR = Path(getcwd())
 SQL_DIR = ROOT_DIR / "sql"
-DATA_DIR = ROOT_DIR / "data"
+OUTPUT_DIR = ROOT_DIR / "output"
 
 
 def main(
@@ -17,15 +17,16 @@ def main(
         SQL_DIR, "--sql", help="Folder to find nodes/ and edges/ sql files"
     ),
     output_folder: Path = typer.Option(
-        DATA_DIR, "--output", help="Folder to output results"
+        OUTPUT_DIR, "--output", help="Folder to output results"
     ),
     sql_filters: List[str] = typer.Option(
         [r".*"], "--filter", help="Only run files that match this regex filter"
     ),
 ):
     # Setup connection
-    conn = get_conn()
-    cxn = conn.connect()
+    cxn = get_conn()
+    # conn = get_conn()
+    # cxn = conn.connect()
     patterns = [re.compile(sql_filter) for sql_filter in sql_filters]
     filter_func = lambda x: any(map(lambda pattern: pattern.match(x), patterns))
     try:
