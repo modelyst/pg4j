@@ -1,0 +1,2 @@
+SELECT development.jcap_sub_ana.id AS "jcapSubAna:ID(JcapSubAna)", 'JcapSubAna' AS ":LABEL", development.jcap_sub_ana.deleted AS deleted, development.jcap_sub_ana.name AS name, development.jcap_sub_ana.technique AS technique, development.jcap_sub_ana.description AS description, development.jcap_sub_ana.run_use_option AS run_use_option, development.jcap_sub_ana.sub_ana_id AS sub_ana_id, development.jcap_sub_ana.analysis_general_type AS analysis_general_type 
+FROM development.jcap_sub_ana

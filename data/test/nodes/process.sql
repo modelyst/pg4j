@@ -1,0 +1,2 @@
+SELECT development.process.id AS "process:ID(Process)", 'Process' AS ":LABEL", development.process.deleted AS deleted, development.process.timestamp AS timestamp, development.process.ordering AS ordering, development.process.machine_name AS machine_name 
+FROM development.process

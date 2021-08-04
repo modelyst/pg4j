@@ -1,0 +1,2 @@
+SELECT development.analysis.id AS "analysis:ID(Analysis)", 'Analysis' AS ":LABEL", development.analysis.deleted AS deleted, development.analysis.analysis_name AS analysis_name, development.analysis.input AS input, development.analysis.output AS output 
+FROM development.analysis

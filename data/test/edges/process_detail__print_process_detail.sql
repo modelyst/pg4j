@@ -1,0 +1,2 @@
+SELECT development.process_detail.id AS ":START_ID(ProcessDetail)", development.process_detail.print_process_detail_id AS ":END_ID(PrintProcessDetail)", 'PrintProcessDetail' AS ":TYPE" 
+FROM development.process_detail

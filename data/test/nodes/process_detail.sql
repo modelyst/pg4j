@@ -1,0 +1,2 @@
+SELECT development.process_detail.id AS "processDetail:ID(ProcessDetail)", 'ProcessDetail' AS ":LABEL", development.process_detail.deleted AS deleted, development.process_detail.level AS level, development.process_detail.type AS type, development.process_detail.technique AS technique 
+FROM development.process_detail

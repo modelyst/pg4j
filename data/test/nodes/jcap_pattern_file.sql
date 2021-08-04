@@ -1,0 +1,2 @@
+SELECT development.jcap_pattern_file.id AS "jcapPatternFile:ID(JcapPatternFile)", 'JcapPatternFile' AS ":LABEL", development.jcap_pattern_file.deleted AS deleted, development.jcap_pattern_file.filename AS filename, development.jcap_pattern_file.file_type AS file_type, development.jcap_pattern_file.headers AS headers, development.jcap_pattern_file.jcap_sample_id AS jcap_sample_id, development.jcap_pattern_file.sample_label AS sample_label, development.jcap_pattern_file.runint AS runint 
+FROM development.jcap_pattern_file

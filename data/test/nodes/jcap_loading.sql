@@ -1,0 +1,2 @@
+SELECT development.jcap_loading.id AS "jcapLoading:ID(JcapLoading)", 'JcapLoading' AS ":LABEL", development.jcap_loading.deleted AS deleted, development.jcap_loading.jcap_sample_id AS jcap_sample_id, development.jcap_loading.jcap_plate_id AS jcap_plate_id, development.jcap_loading.sample_label AS sample_label, development.jcap_loading.runint AS runint, development.jcap_loading.loading_json AS loading_json, development.jcap_loading.line_number AS line_number 
+FROM development.jcap_loading
