@@ -1,2 +1,0 @@
-SELECT development.collection.id AS "collection:ID(Collection)", 'Collection' AS ":LABEL", development.collection.deleted AS deleted, development.collection.type AS type, development.collection.label AS label, development.collection.details AS details 
-FROM development.collection

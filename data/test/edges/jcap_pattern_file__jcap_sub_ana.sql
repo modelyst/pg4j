@@ -1,2 +1,0 @@
-SELECT development.jcap_pattern_file.id AS ":START_ID(JcapPatternFile)", development.jcap_pattern_file.jcap_sub_ana_id AS ":END_ID(JcapSubAna)", 'JcapSubAna' AS ":TYPE" 
-FROM development.jcap_pattern_file

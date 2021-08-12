@@ -1,2 +1,0 @@
-SELECT development.state_ancestor.id AS "stateAncestor:ID(StateAncestor)", 'StateAncestor' AS ":LABEL", development.state_ancestor.deleted AS deleted, development.state_ancestor.ind AS ind, development.state_ancestor.ancestor AS ancestor, development.state_ancestor.child AS child 
-FROM development.state_ancestor

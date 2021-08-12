@@ -1,2 +1,0 @@
-SELECT development.jcap_exp_run.jcap_experiment_id AS ":START_ID(JcapExperiment)", development.jcap_exp_run.jcap_run_id AS ":END_ID(JcapRun)", 'JcapRun' AS ":TYPE", development.jcap_exp_run.deleted AS deleted, development.jcap_exp_run.run_int AS run_int 
-FROM development.jcap_exp_run

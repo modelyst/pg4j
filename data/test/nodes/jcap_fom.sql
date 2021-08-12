@@ -1,2 +1,0 @@
-SELECT development.jcap_fom.id AS "jcapFom:ID(JcapFom)", 'JcapFom' AS ":LABEL", development.jcap_fom.deleted AS deleted, development.jcap_fom.runint AS runint, development.jcap_fom.jcap_sample_id AS jcap_sample_id, development.jcap_fom.jcap_plate_id AS jcap_plate_id, development.jcap_fom.key AS key, development.jcap_fom.value AS value, development.jcap_fom.sample_label AS sample_label 
-FROM development.jcap_fom

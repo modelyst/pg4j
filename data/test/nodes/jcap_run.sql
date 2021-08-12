@@ -1,2 +1,0 @@
-SELECT development.jcap_run.id AS "jcapRun:ID(JcapRun)", 'JcapRun' AS ":LABEL", development.jcap_run.deleted AS deleted, development.jcap_run.release_name AS release_name, development.jcap_run.pth_to_zip AS pth_to_zip, development.jcap_run.rcp_file AS rcp_file, development.jcap_run.timestamp AS timestamp, development.jcap_run.jcap_plate_id AS jcap_plate_id, development.jcap_run.rcp_dict AS rcp_dict, development.jcap_run.experiment_type AS experiment_type, development.jcap_run.run_exists AS run_exists 
-FROM development.jcap_run

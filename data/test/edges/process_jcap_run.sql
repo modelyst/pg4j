@@ -1,2 +1,0 @@
-SELECT development.process_jcap_run.jcap_run_id AS ":START_ID(JcapRun)", development.process_jcap_run.process_id AS ":END_ID(Process)", 'Process' AS ":TYPE", development.process_jcap_run.deleted AS deleted 
-FROM development.process_jcap_run

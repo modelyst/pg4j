@@ -1,2 +1,0 @@
-SELECT development.jcap_experiment.id AS "jcapExperiment:ID(JcapExperiment)", 'JcapExperiment' AS ":LABEL", development.jcap_experiment.deleted AS deleted, development.jcap_experiment.release_name AS release_name, development.jcap_experiment.pth_to_zip AS pth_to_zip, development.jcap_experiment.exp_file AS exp_file, development.jcap_experiment.experiment_type AS experiment_type 
-FROM development.jcap_experiment

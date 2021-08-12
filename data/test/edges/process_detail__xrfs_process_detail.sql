@@ -1,2 +1,0 @@
-SELECT development.process_detail.id AS ":START_ID(ProcessDetail)", development.process_detail.xrfs_process_detail_id AS ":END_ID(XrfsProcessDetail)", 'XrfsProcessDetail' AS ":TYPE" 
-FROM development.process_detail

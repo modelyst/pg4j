@@ -1,2 +1,0 @@
-SELECT development.collection_sample.sample_id AS ":START_ID(Sample)", development.collection_sample.collection_id AS ":END_ID(Collection)", 'Collection' AS ":TYPE", development.collection_sample.deleted AS deleted 
-FROM development.collection_sample

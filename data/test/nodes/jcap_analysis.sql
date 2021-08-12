@@ -1,2 +1,0 @@
-SELECT development.jcap_analysis.id AS "jcapAnalysis:ID(JcapAnalysis)", 'JcapAnalysis' AS ":LABEL", development.jcap_analysis.deleted AS deleted, development.jcap_analysis.release_name AS release_name, development.jcap_analysis.pth_to_zip AS pth_to_zip, development.jcap_analysis.ana_file AS ana_file, development.jcap_analysis.timestamp AS timestamp, development.jcap_analysis.description AS description, development.jcap_analysis.analysis_type AS analysis_type 
-FROM development.jcap_analysis

@@ -1,2 +1,0 @@
-SELECT development.sample_process_process_data.sample_process_id AS ":START_ID(SampleProcess)", development.sample_process_process_data.process_data_id AS ":END_ID(ProcessData)", 'ProcessData' AS ":TYPE", development.sample_process_process_data.deleted AS deleted 
-FROM development.sample_process_process_data

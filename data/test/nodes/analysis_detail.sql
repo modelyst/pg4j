@@ -1,2 +1,0 @@
-SELECT development.analysis_detail.id AS "analysisDetail:ID(AnalysisDetail)", 'AnalysisDetail' AS ":LABEL", development.analysis_detail.deleted AS deleted, development.analysis_detail.analysis_name AS analysis_name, development.analysis_detail.details AS details 
-FROM development.analysis_detail
