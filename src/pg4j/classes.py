@@ -1,16 +1,15 @@
-from typing import List, ForwardRef
-from json import dumps
 import dataclasses
 from collections.abc import Collection
-from sqlalchemy import (
-    Column as SAColumn,
-    ForeignKey as SAForeignKey,
-    Table as SATable,
-    select,
-)
-from sqlalchemy.sql.expression import label, literal_column
-from sqlalchemy.sql.schema import MetaData
+from json import dumps
+from typing import ForwardRef, List
 
+from sqlalchemy import Column as SAColumn
+from sqlalchemy import ForeignKey as SAForeignKey
+from sqlalchemy import Table as SATable
+from sqlalchemy import select, cast
+from sqlalchemy import Text
+from sqlalchemy.sql.expression import literal_column
+from sqlalchemy.sql.schema import MetaData
 
 ForeignKey = ForwardRef("ForiegnKey")
 
@@ -137,28 +136,46 @@ class Table(Base):
         include_columns_func,
         exclude_columns_func,
         col_map: dict = None,
+        ignore_mapping: bool = False
     ) -> str:
-        from .utils import snake_to_camel
+        from .utils import snake_to_camel, PG_TO_NEO4J_TYPE_MAP
 
         # alias for columns
         col_map = col_map or {}
-        select_cols = [
-            col.sa_col.label(col_map.get(col.name, col.name))
-            for col in self.columns
-            if include_columns_func(col.name) and not exclude_columns_func(col.name)
-        ]
-        if self.is_mapping_table(metadata):
-            left, right = self.foreign_keys
+        select_cols = []
+        for col in self.columns:
+            if include_columns_func(col.name) and not exclude_columns_func(col.name):
+                type_string = PG_TO_NEO4J_TYPE_MAP.get(type(col.sa_col.type), "string")
+
+                if type(col.sa_col.type) not in PG_TO_NEO4J_TYPE_MAP:
+                    print(f"No type mapping for type: {type(col.sa_col.type)}")
+                col_name = col_map.get(col.name, col.name)
+                alias = f"{col_name}:{type_string}"
+                if isinstance(col.sa_col.type, ()):
+                    select_cols.append(cast(col.sa_col.label(alias), Text))
+                else:
+                    select_cols.append(col.sa_col.label(alias))
+
+        if not ignore_mapping and self.is_mapping_table(metadata):
+            start, end = self.foreign_keys
+            # Convention for mapping table is STARTTABLE__END_TABLE
+            # Swap start and end if the table name begins with the ends table_name
+            # Else the arrow direction is essentially random as defined by SqlAlchemy's ordering of FKs
+            if self.name.startswith(end.target_table):
+                temp = start
+                start = end
+                end = temp
+
             return select(
                 [
-                    left.sa_foreign_key.parent.label(
-                        f":START_ID({snake_to_camel(left.target_table, True)})"
+                    start.sa_foreign_key.parent.label(
+                        f":START_ID({snake_to_camel(start.target_table, True)})"
                     ),
-                    right.sa_foreign_key.parent.label(
-                        f":END_ID({snake_to_camel(right.target_table,True)})"
+                    end.sa_foreign_key.parent.label(
+                        f":END_ID({snake_to_camel(end.target_table,True)})"
                     ),
                     literal_column(
-                        "'" + snake_to_camel(right.target_table, True) + "'"
+                        "'" + snake_to_camel(end.target_table, True).upper() + "'"
                     ).label(":TYPE"),
                     *select_cols,
                 ]
