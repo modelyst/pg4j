@@ -20,7 +20,7 @@ def get_conn(dsn: str, password: str = None):
         "postgresql+psycopg2",
         username=parsed_dsn["user"],
         host=parsed_dsn["host"],
-        port=parsed_dsn["port"],
+        port=parsed_dsn.get("port", 5432),
         database=parsed_dsn["dbname"],
         password=password,
     )

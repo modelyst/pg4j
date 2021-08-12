@@ -10,7 +10,7 @@ from .typer_options import (
     TAB_XCLUDE_FILTERS_OPTION,
     TAB_INCLUDE_FILTERS_OPTION,
 )
-from .utils import dump_query, get_conn
+from .utils import dump_query, get_conn, parse_dsn
 from .mapper import mapper
 
 # DEFAULTS
@@ -32,9 +32,7 @@ def dump(
     tab_exclude_filters: List[str] = TAB_XCLUDE_FILTERS_OPTION,
     tab_include_filters: List[str] = TAB_INCLUDE_FILTERS_OPTION,
     dsn: str = DSN_OPTION,
-    db_password: str = typer.Option(
-        None, prompt=True, confirmation_prompt=True, hide_input=True
-    ),
+    db_password: str = typer.Option("", "--password", "-p"),
     ignore_mapping: bool = typer.Option(False, "--ignore-auto-mapping"),
     read: bool = False,
     overwrite: bool = typer.Option(
@@ -42,10 +40,14 @@ def dump(
     ),
 ):
     # Setup connection
+    parsed_dsn = parse_dsn(dsn)
+    if not db_password and "password" not in parsed_dsn:
+        db_password = typer.prompt("Please Enter DB Password", "")
     engine = get_conn(dsn, db_password)
     sql_stmts = {"nodes": {}, "edges": {}}
     if overwrite:
-        rmtree(output_folder)
+        if output_folder.exists():
+            rmtree(output_folder)
         output_folder.mkdir()
     if read:
         for entity_type in ("nodes", "edges"):
@@ -58,7 +60,7 @@ def dump(
                 if file_name.suffix == ".sql"
             ]
             for basename in sql_paths:
-                sql_command = basename.read_text().strip(";")
+                sql_command = basename.read_text().strip().strip(";")
                 sql_stmts[entity_type][basename.name] = sql_command
 
     else:

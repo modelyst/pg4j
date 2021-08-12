@@ -26,8 +26,10 @@ def check_data_dir(directory: Path) -> bool:
     return directory
 
 
-DIRECTORY_THAT_IS_EMPTY_OPTION = typer.Option(
-    DEFAULT_DIRECTORY, "--data-dir", callback=check_data_dir
+PG4J_DATA_DIR_OPTION = typer.Option(
+    [DEFAULT_DIRECTORY],
+    "--data-dir",
+    callback=lambda inputs: list(map(check_data_dir, inputs)),
 )
 
 DSN_OPTION = build_typer_option(DEFAULT_DSN)(
