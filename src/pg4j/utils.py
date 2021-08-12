@@ -6,15 +6,26 @@ from sqlalchemy import ForeignKey as SAForeignKey
 from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy.sql import sqltypes
 import sqlalchemy.dialects.postgresql as pg
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Engine, url
+from psycopg2.extensions import parse_dsn
 
 from .classes import ForeignKey
 
 FILTER_FUNC_TYPE = Callable[[str], bool]
 
 
-def get_conn(dsn: str):
-    engine = create_engine(dsn)
+def get_conn(dsn: str, password: str = None):
+    parsed_dsn = parse_dsn(dsn)
+    new_url = url.URL(
+        "postgresql+psycopg2",
+        username=parsed_dsn["user"],
+        host=parsed_dsn["host"],
+        port=parsed_dsn["port"],
+        database=parsed_dsn["dbname"],
+        password=password,
+    )
+
+    engine = create_engine(new_url)
     engine.connect()
     return engine
 

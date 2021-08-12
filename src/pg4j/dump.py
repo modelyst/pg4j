@@ -32,14 +32,17 @@ def dump(
     tab_exclude_filters: List[str] = TAB_XCLUDE_FILTERS_OPTION,
     tab_include_filters: List[str] = TAB_INCLUDE_FILTERS_OPTION,
     dsn: str = DSN_OPTION,
-    ignore_mapping: bool = typer.Option(False,"--ignore-auto-mapping"),
+    db_password: str = typer.Option(
+        None, prompt=True, confirmation_prompt=True, hide_input=True
+    ),
+    ignore_mapping: bool = typer.Option(False, "--ignore-auto-mapping"),
     read: bool = False,
     overwrite: bool = typer.Option(
         False, "--overwrite", help="Overwrite the output_folder"
     ),
 ):
     # Setup connection
-    cxn = get_conn(dsn)
+    engine = get_conn(dsn, db_password)
     sql_stmts = {"nodes": {}, "edges": {}}
     if overwrite:
         rmtree(output_folder)
@@ -66,7 +69,8 @@ def dump(
             col_include_filters,
             tab_exclude_filters,
             tab_include_filters,
-            ignore_mapping=ignore_mapping
+            engine=engine,
+            ignore_mapping=ignore_mapping,
         )
 
     try:
@@ -77,9 +81,9 @@ def dump(
             for file_name, sql_command in sql_stmts[entity_type].items():
                 dump_query(
                     sql_command,
-                    cxn,
+                    engine,
                     data_dir_curr / file_name.replace(".sql", ".csv"),
                 )
                 sleep(0.2)
     finally:
-        cxn.dispose()
+        engine.dispose()

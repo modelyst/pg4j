@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List, Dict
 
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 
 from .classes import Table
 from .typer_options import (
@@ -22,7 +23,8 @@ def mapper(
     tab_exclude_filters: List[str] = TAB_XCLUDE_FILTERS_OPTION,
     tab_include_filters: List[str] = TAB_INCLUDE_FILTERS_OPTION,
     write: bool = False,
-    ignore_mapping: bool = False
+    engine=None,
+    ignore_mapping: bool = False,
 ) -> Dict[str, Dict[str, str]]:
     # Compile filter func
     col_include_filter_func = filters_to_filter_func(col_include_filters)
@@ -30,7 +32,8 @@ def mapper(
     tab_include_filter_func = filters_to_filter_func(tab_include_filters)
     tab_exclude_filter_func = filters_to_filter_func(tab_exclude_filters)
 
-    engine = create_engine(dsn)
+    if not engine:
+        engine = create_engine(dsn)
     metadata = read_schema(engine, schema)
     col_map = {}
     node_sql_stmts = {}
@@ -46,7 +49,11 @@ def mapper(
         ):
             tab = Table.from_sqlalchemy(table)
             tab_sql = tab.toSQL(
-                metadata, col_include_filter_func, col_exclude_filter_func, col_map, ignore_mapping
+                metadata,
+                col_include_filter_func,
+                col_exclude_filter_func,
+                col_map,
+                ignore_mapping,
             )
 
             if ignore_mapping or not tab.is_mapping_table(metadata):
