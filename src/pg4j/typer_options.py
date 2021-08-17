@@ -27,7 +27,7 @@ def check_data_dir(directory: Path) -> bool:
 
 
 PG4J_DATA_DIR_OPTION = typer.Option(
-    [DEFAULT_DIRECTORY],
+    [],
     "--data-dir",
     callback=lambda inputs: list(map(check_data_dir, inputs)),
 )
@@ -59,3 +59,6 @@ FILE_INCLUDE_FILTERS_OPTION = INCLUDE_FILTER(
 FILE_XCLUDE_FILTERS_OPTION = XCLUDE_FILTER(
     "Exclude tables whose name matches these regex filters", ["--exclude"]
 )
+
+
+CONFIG_OPTION = typer.Option(None, "--config", "-c", help="Configuration file.")

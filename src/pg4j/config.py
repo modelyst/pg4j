@@ -1,13 +1,14 @@
-"""For parsing in config."""
-import typer
-from .typer_options import DSN_OPTION
-from .utils import get_conn
+"""For parsing in config YAML."""
+from pathlib import Path
+import yaml
 
 
-def test_conn(
-    dsn: str = DSN_OPTION,
-    db_password: str = typer.Option(
-        None, prompt=True, confirmation_prompt=True, hide_input=True
-    ),
-):
-    print(get_conn(dsn, password=db_password))
+def read_config(config_path: Path) -> dict:
+    config = None
+    with open(config_path, "r") as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.SafeLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    return config
