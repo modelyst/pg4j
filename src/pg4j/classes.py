@@ -24,6 +24,7 @@ from sqlalchemy import Text, cast, select
 from sqlalchemy.sql.expression import literal_column
 from sqlalchemy.sql.schema import MetaData
 
+from pg4j.sql import PG_TO_NEO4J_TYPE_MAP
 from pg4j.utils import camel_to_snake, snake_to_camel
 
 
@@ -130,10 +131,10 @@ class ForeignKey(Base):
         return select(
             [
                 self.sa_foreign_key.parent.table.columns.id.label(
-                    f":START_ID({snake_to_camel(source_table,True)})"
+                    f":START_ID({snake_to_camel(source_table.name,True)})"
                 ),
-                self.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(self.target_table,True)})"),
-                literal_column("'" + camel_to_snake(target_table).upper() + "'").label(":TYPE"),
+                self.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(target_table.name,True)})"),
+                literal_column("'" + camel_to_snake(target_table.name).upper() + "'").label(":TYPE"),
             ]
         )
 
@@ -190,7 +191,6 @@ class Table(Base):
         col_map: Dict[str, str] = None,
         ignore_mapping: bool = False,
     ) -> str:
-        from pg4j.sql import PG_TO_NEO4J_TYPE_MAP
 
         # alias for columns
         col_map = col_map or {}

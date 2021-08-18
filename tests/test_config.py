@@ -41,8 +41,8 @@ def test_bad_config(config_path: Path):
 def test_get_map():
     config = Pg4jConfig.from_yaml(CONFIG_DIR / "simple_map.yaml")
     mapping = config.column_mapping
-    none_map = mapping.get("non_existent_table")
+    none_map = mapping.get_table_map("non_existent_table")
     assert none_map == mapping.default
-    one_map = mapping.get("table_1")
+    one_map = mapping.get_table_map("table_1")
     assert one_map["col1"] == "table_1_col1"
     assert one_map["col2"] == mapping.default["col2"]

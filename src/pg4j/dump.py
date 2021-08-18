@@ -15,7 +15,7 @@
 from pathlib import Path
 from shutil import rmtree
 from time import sleep
-from typing import List
+from typing import Dict, List
 
 import typer
 
@@ -61,7 +61,7 @@ def dump(
     if not db_password and "password" not in parsed_dsn:
         db_password = typer.prompt("Please Enter DB Password", "")
     engine = get_conn(dsn, db_password)
-    sql_stmts = {"nodes": {}, "edges": {}}
+    sql_stmts: Dict[str, Dict[str, str]] = {"nodes": {}, "edges": {}}
     if overwrite:
         if output_folder.exists():
             rmtree(output_folder)

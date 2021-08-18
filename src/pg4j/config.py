@@ -37,7 +37,7 @@ class ColumnMapping(BaseModel):
     default: Dict[str, str] = Field(default_factory=lambda: {})
     table_maps: Dict[str, Dict[str, str]] = Field(default_factory=lambda: {})
 
-    def get(self, table_name: str) -> Dict[str, str]:
+    def get_table_map(self, table_name: str) -> Dict[str, str]:
         output = self.default.copy()
         output.update({k: v for k, v in self.table_maps.get(table_name, {}).items()})
         return output

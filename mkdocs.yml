@@ -1,0 +1,97 @@
+#   Copyright 2021 Modelyst LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+site_name: pg4j
+site_description: pg4j framework, high performance, easy to learn, fast to code, ready for production
+site_url: https://www.pg4j.modelyst.com/
+edit_uri: ""
+copyright: "© 2020, Modelyst LLC. All rights reserved."
+theme:
+  name: material
+  custom_dir: docs/overrides
+  font:
+    text: Roboto
+  palette~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      accent: white
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github-alt
+  logo: img/logo.png
+  favicon: img/favicon.png
+  language: en
+  features:
+    - navigation.instant
+repo_name: modelyst/pg4j
+repo_url: https://github.com/modelyst/pg4j
+markdown_extensions:
+  - toc:
+      permalink: true
+  - markdown_include.include:
+      base_path: docs
+  - attr_list
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format ''
+  - pymdownx.tabbed
+  - markdown.extensions.codehilite:
+      guess_lang: true
+  - codehilite
+plugins:
+  - search
+  - mkdocstrings:
+      watch:
+        - src/pg4j
+      handlers:
+        python:
+          selection:
+            filters:
+              - "!^_"         # exlude all members starting with _
+              - "^__init__$"  # but always include __init__ modules and methods
+nav:
+  - pg4j: index.md
+  - Getting Started: usage.md
+  - Installation: installation.md
+  - License: license.md
+  - Reference:
+      - pg4j:
+          - Package Contents: reference/pg4j/index.md
+          - pg4j.classes: reference/pg4j/classes.md
+          - pg4j.cli:
+              - Module Contents: reference/pg4j/cli/index.md
+              - pg4j.cli.styles: reference/pg4j/cli/styles.md
+              - pg4j.cli.typer_options: reference/pg4j/cli/typer_options.md
+          - pg4j.config: reference/pg4j/config.md
+          - pg4j.dump: reference/pg4j/dump.md
+          - pg4j.importer: reference/pg4j/importer.md
+          - pg4j.mapper: reference/pg4j/mapper.md
+          - pg4j.sql: reference/pg4j/sql.md
+          - pg4j.utils: reference/pg4j/utils.md
+          - pg4j.version: reference/pg4j/version.md
+extra_css:
+  - css/termynal.css
+  - css/custom.css
+extra_javascript:
+  - https://unpkg.com/mermaid@8.4.6/dist/mermaid.min.js
+  - js/termynal.js
+  - js/custom.js

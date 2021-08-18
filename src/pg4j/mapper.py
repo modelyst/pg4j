@@ -69,7 +69,7 @@ def mapper(
                 metadata,
                 col_include_filter_func,
                 col_exclude_filter_func,
-                col_map.get(table_name),
+                col_map.get_table_map(table_name),
                 ignore_mapping,
             )
 

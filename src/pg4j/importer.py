@@ -24,7 +24,7 @@ from pg4j.cli.typer_options import (
     PG4J_DATA_DIR_OPTION,
     VERSION_OPTION,
 )
-from pg4j.config import Pg4jConfig
+from pg4j.config import DataDirectory, Pg4jConfig
 from pg4j.utils import filters_to_filter_func
 
 
@@ -34,6 +34,8 @@ def importer(
     neo4j_path: Path = NEO4J_HOME_OPTION,
     dbname: str = "neo4j",
     config_path: Path = CONFIG_OPTION,
+    start_neo4j: bool = True,
+    overwrite: bool = False,
     version: bool = VERSION_OPTION,
 ):
     """
@@ -53,13 +55,11 @@ def importer(
     subfolders = ["nodes", "edges"]
     neo4j_types = ["nodes", "relationships"]
     config_dirs = config.data_dirs
-    # breakpoint()
-    # exit(0)
-    data_dirs = set(data_dirs + list(config_dirs.keys()))
-    for data_dir in data_dirs:
-        added_labels = config_dirs.get(data_dir, {}).get("labels")
-        added_labels = ":".join(added_labels)
-        added_label_str = f"={added_labels}" if added_labels else ""
+    data_dir_set = set(data_dirs + list(config_dirs.keys()))
+    for data_dir in data_dir_set:
+        added_labels = config_dirs.get(data_dir, DataDirectory()).labels
+        joined_labels = ":".join(added_labels)
+        added_label_str = f"={joined_labels}" if joined_labels else ""
 
         for subfolder, neo4j_type in zip(subfolders, neo4j_types):
             csv_folder = Path(data_dir) / subfolder
@@ -81,10 +81,15 @@ def importer(
     for file_name in ("databases", "transactions"):
         pth = neo4j_path / file_name / dbname
         if pth.exists():
-            shutil.rmtree(pth)
+            if overwrite:
+                shutil.rmtree(pth)
+            else:
+                raise
     import_output = subprocess.check_output(import_cmd)
     print(import_output.decode().strip())
     print("######")
-    output = subprocess.check_output(neo4j_start_cmd)
-    print(output.decode().strip())
+    if start_neo4j:
+        output = subprocess.check_output(neo4j_start_cmd)
+        print(output.decode().strip())
     print("######")
+    print("Finished")
