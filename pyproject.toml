@@ -1,7 +1,7 @@
 [tool.black]
 line-length = 110
 skip-string-normalization = true
-target-version = ['py36', 'py37', 'py38', 'py39']
+target-version = ['py36', 'py37', 'py38']
 
 [tool.poetry]
 authors = ["Michael Statt <michael.statt@modelyst.io>", "Brian Rohr <brian.rohr@modelyst.io>"]

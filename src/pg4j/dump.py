@@ -19,17 +19,18 @@ from typing import List
 
 import typer
 
-from pg4j.config import Pg4jConfig
-from pg4j.mapper import mapper
-from pg4j.sql import dump_query, get_conn, parse_dsn
-from pg4j.typer_options import (
+from pg4j.cli.typer_options import (
     COL_INCLUDE_FILTERS_OPTION,
     COL_XCLUDE_FILTERS_OPTION,
     CONFIG_OPTION,
     DSN_OPTION,
     TAB_INCLUDE_FILTERS_OPTION,
     TAB_XCLUDE_FILTERS_OPTION,
+    VERSION_OPTION,
 )
+from pg4j.config import Pg4jConfig
+from pg4j.mapper import mapper
+from pg4j.sql import dump_query, get_conn, parse_dsn
 
 # DEFAULTS
 ROOT_DIR = Path.cwd()
@@ -51,6 +52,7 @@ def dump(
     read: bool = False,
     overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite the output_folder"),
     config_file: Path = CONFIG_OPTION,
+    version: bool = VERSION_OPTION,
 ):
     config = Pg4jConfig.from_yaml(config_file)
 

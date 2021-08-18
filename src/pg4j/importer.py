@@ -17,13 +17,14 @@ import subprocess
 from pathlib import Path
 from typing import List
 
-from pg4j.config import Pg4jConfig
-from pg4j.typer_options import (
+from pg4j.cli.typer_options import (
     CONFIG_OPTION,
     FILE_INCLUDE_FILTERS_OPTION,
     NEO4J_HOME_OPTION,
     PG4J_DATA_DIR_OPTION,
+    VERSION_OPTION,
 )
+from pg4j.config import Pg4jConfig
 from pg4j.utils import filters_to_filter_func
 
 
@@ -33,6 +34,7 @@ def importer(
     neo4j_path: Path = NEO4J_HOME_OPTION,
     dbname: str = "neo4j",
     config_path: Path = CONFIG_OPTION,
+    version: bool = VERSION_OPTION,
 ):
     """
     Import data_directory into neo4j instance.

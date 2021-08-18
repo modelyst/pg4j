@@ -14,18 +14,14 @@
 
 import typer
 
-from pg4j.cli.typer_options import version_callback
-from pg4j.dump import dump
-from pg4j.importer import importer
-from pg4j.mapper import mapper
+from pg4j import PRINT_LOGO
 
-app = typer.Typer()
-
-# Add subcommands
-app.command("map")(mapper)
-app.command("dump")(dump)
-app.command("import")(importer)
-app.command("version", short_help="Display pg4j version info.")(lambda: version_callback(True))
-
-# Run App
-app()
+THEME_COLOR = typer.colors.BRIGHT_MAGENTA
+delimiter = lambda: typer.echo(typer.style("-----------------------------------", fg=THEME_COLOR, bold=True))
+LOGO_STYLE = typer.style(PRINT_LOGO, blink=True, fg=THEME_COLOR)
+# Easy printers
+typer_print = lambda color: lambda msg: typer.echo(typer.style(msg, fg=color))
+good_typer_print = typer_print(typer.colors.GREEN)
+bad_typer_print = typer_print(typer.colors.RED)
+greens = lambda x: typer.style(x, fg=typer.colors.BRIGHT_GREEN)
+reds = lambda x: typer.style(x, fg=typer.colors.BRIGHT_RED)

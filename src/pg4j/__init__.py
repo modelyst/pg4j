@@ -22,3 +22,18 @@ __maintainer__ = "Michael Statt"
 __maintainer_email__ = "michael.statt@modelyst.io"
 __version__ = version
 __gitversion__ = git_version
+
+LOGO = r"""
+                 __ __  _
+    ____  ____ _/ // / (_)
+   / __ \/ __ `/ // /_/ /
+  / /_/ / /_/ /__  __/ /
+ / .___/\__, /  /_/_/ /
+/_/    /____/    /___/
+"""
+
+PRINT_LOGO = f"""
+--------------------------{LOGO}--------------------------
+VERSION: {version}
+GITVERSION: {git_version}
+"""

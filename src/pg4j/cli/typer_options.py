@@ -17,6 +17,8 @@ from pathlib import Path
 
 import typer
 
+from pg4j.cli.styles import LOGO_STYLE
+
 # DEFAULT Constants
 USER = environ.get("USER", "postgres")
 DEFAULT_DSN = f"postgresql://{USER}:@localhost/ssrl"
@@ -25,7 +27,7 @@ DEFAULT_DIRECTORY = Path.cwd()
 build_typer_option = lambda default: lambda help_str, abbrev: typer.Option(default, *abbrev, help=help_str)
 
 
-def check_data_dir(directory: Path) -> bool:
+def check_data_dir(directory: Path) -> Path:
     # Check directory exists and is empty
     if not directory.exists():
         directory.mkdir(exist_ok=True)
@@ -34,6 +36,21 @@ def check_data_dir(directory: Path) -> bool:
         if not (directory / name).exists():
             raise typer.BadParameter(f"Data-dir does not have {name} directory inside it!")
     return directory
+
+
+def version_callback(value: bool):
+    """
+    Eagerly print the version LOGO
+
+    Args:
+        value (bool): [description]
+
+    Raises:
+        typer.Exit: exits after showing version
+    """
+    if value:
+        typer.echo(LOGO_STYLE)
+        raise typer.Exit()
 
 
 PG4J_DATA_DIR_OPTION = typer.Option(
@@ -70,3 +87,5 @@ FILE_XCLUDE_FILTERS_OPTION = XCLUDE_FILTER(
 
 
 CONFIG_OPTION = typer.Option(None, "--config", "-c", help="Configuration file.")
+
+VERSION_OPTION = typer.Option(None, "--version", "-v", callback=version_callback, is_eager=True)

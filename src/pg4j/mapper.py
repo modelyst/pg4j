@@ -18,15 +18,15 @@ from typing import Dict, List
 from sqlalchemy import create_engine
 
 from pg4j.classes import Table
-from pg4j.config import Pg4jConfig
-from pg4j.sql import read_schema
-from pg4j.typer_options import (
+from pg4j.cli.typer_options import (
     COL_INCLUDE_FILTERS_OPTION,
     COL_XCLUDE_FILTERS_OPTION,
     DSN_OPTION,
     TAB_INCLUDE_FILTERS_OPTION,
     TAB_XCLUDE_FILTERS_OPTION,
 )
+from pg4j.config import Pg4jConfig
+from pg4j.sql import read_schema
 from pg4j.utils import filters_to_filter_func
 
 # if TYPE_CHECKING:

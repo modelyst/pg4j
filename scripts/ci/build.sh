@@ -1,3 +1,4 @@
+#!/bin/bash
 #   Copyright 2021 Modelyst LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,5 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import typer
-
-from pg4j.cli.typer_options import version_callback
-from pg4j.dump import dump
-from pg4j.importer import importer
-from pg4j.mapper import mapper
-
-app = typer.Typer()
-
-# Add subcommands
-app.command("map")(mapper)
-app.command("dump")(dump)
-app.command("import")(importer)
-app.command("version", short_help="Display pg4j version info.")(lambda: version_callback(True))
-
-# Run App
-app()
+python ./scripts/ci/git_version.py
+poetry build
