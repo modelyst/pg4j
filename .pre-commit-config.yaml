@@ -136,7 +136,7 @@ repos:
         entry: "^\\s*from\\s+\\."
         pass_filenames: true
         files: \.py$
-        exclude: ^src/dbgen/cli/newfiles/|^tests/
+        exclude: ^tests/
       - id: consistent-pylint
         language: pygrep
         name: Check for inconsistent pylint disable/enable without space
