@@ -12,18 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import typer
+__all__ = ["version"]
+from os.path import dirname, exists, join
 
-from pg4j.dump import dump
-from pg4j.importer import importer
-from pg4j.mapper import mapper
+version = "0.0.1"
 
-app = typer.Typer()
-
-# Add subcommands
-app.command("map")(mapper)
-app.command("dump")(dump)
-app.command("import")(importer)
-
-# Run App
-app()
+try:
+    curr_dir = dirname(__file__)
+    git_ver_file = join(curr_dir, "git_version")
+    if exists(git_ver_file):
+        with open(git_ver_file) as f:
+            git_version: str = f.read().strip()
+    else:
+        git_version = ""
+except FileNotFoundError:
+    git_version = ""

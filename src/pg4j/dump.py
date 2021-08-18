@@ -1,17 +1,35 @@
+#   Copyright 2021 Modelyst LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 from pathlib import Path
+from shutil import rmtree
 from time import sleep
 from typing import List
+
 import typer
-from shutil import rmtree
-from .typer_options import (
-    DSN_OPTION,
-    COL_XCLUDE_FILTERS_OPTION,
+
+from pg4j.config import Pg4jConfig
+from pg4j.mapper import mapper
+from pg4j.sql import dump_query, get_conn, parse_dsn
+from pg4j.typer_options import (
     COL_INCLUDE_FILTERS_OPTION,
-    TAB_XCLUDE_FILTERS_OPTION,
+    COL_XCLUDE_FILTERS_OPTION,
+    CONFIG_OPTION,
+    DSN_OPTION,
     TAB_INCLUDE_FILTERS_OPTION,
+    TAB_XCLUDE_FILTERS_OPTION,
 )
-from .utils import dump_query, get_conn, parse_dsn
-from .mapper import mapper
 
 # DEFAULTS
 ROOT_DIR = Path.cwd()
@@ -20,12 +38,8 @@ OUTPUT_DIR = ROOT_DIR / "output"
 
 
 def dump(
-    sql_folder: Path = typer.Option(
-        SQL_DIR, "--sql", help="Folder to find nodes/ and edges/ sql files"
-    ),
-    output_folder: Path = typer.Option(
-        OUTPUT_DIR, "--output", help="Folder to output results"
-    ),
+    sql_folder: Path = typer.Option(SQL_DIR, "--sql", help="Folder to find nodes/ and edges/ sql files"),
+    output_folder: Path = typer.Option(OUTPUT_DIR, "--output", help="Folder to output results"),
     schema: str = "public",
     col_exclude_filters: List[str] = COL_XCLUDE_FILTERS_OPTION,
     col_include_filters: List[str] = COL_INCLUDE_FILTERS_OPTION,
@@ -35,10 +49,11 @@ def dump(
     db_password: str = typer.Option("", "--password", "-p"),
     ignore_mapping: bool = typer.Option(False, "--ignore-auto-mapping"),
     read: bool = False,
-    overwrite: bool = typer.Option(
-        False, "--overwrite", help="Overwrite the output_folder"
-    ),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite the output_folder"),
+    config_file: Path = CONFIG_OPTION,
 ):
+    config = Pg4jConfig.from_yaml(config_file)
+
     # Setup connection
     parsed_dsn = parse_dsn(dsn)
     if not db_password and "password" not in parsed_dsn:
@@ -54,11 +69,7 @@ def dump(
             # Setup the directories to read from
             sql_dir_curr = sql_folder / entity_type
 
-            sql_paths = [
-                file_name
-                for file_name in sql_dir_curr.iterdir()
-                if file_name.suffix == ".sql"
-            ]
+            sql_paths = [file_name for file_name in sql_dir_curr.iterdir() if file_name.suffix == ".sql"]
             for basename in sql_paths:
                 sql_command = basename.read_text().strip().strip(";")
                 sql_stmts[entity_type][basename.name] = sql_command
@@ -73,6 +84,7 @@ def dump(
             tab_include_filters,
             engine=engine,
             ignore_mapping=ignore_mapping,
+            config=config,
         )
 
     try:

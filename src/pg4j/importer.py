@@ -1,16 +1,30 @@
+#   Copyright 2021 Modelyst LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 import shutil
 import subprocess
 from pathlib import Path
 from typing import List
 
-from .config import read_config
-from .typer_options import (
-    PG4J_DATA_DIR_OPTION,
+from pg4j.config import Pg4jConfig
+from pg4j.typer_options import (
+    CONFIG_OPTION,
     FILE_INCLUDE_FILTERS_OPTION,
     NEO4J_HOME_OPTION,
-    CONFIG_OPTION,
+    PG4J_DATA_DIR_OPTION,
 )
-from .utils import filters_to_filter_func
+from pg4j.utils import filters_to_filter_func
 
 
 def importer(
@@ -23,7 +37,7 @@ def importer(
     """
     Import data_directory into neo4j instance.
     """
-    config = read_config(config_path)
+    config = Pg4jConfig.from_yaml(config_path)
     include_filter = filters_to_filter_func(include_regex)
 
     neo4j_stop_cmd = ["neo4j", "stop"]
@@ -36,7 +50,9 @@ def importer(
     ]
     subfolders = ["nodes", "edges"]
     neo4j_types = ["nodes", "relationships"]
-    config_dirs = config.get("data_dirs", {})
+    config_dirs = config.data_dirs
+    # breakpoint()
+    # exit(0)
     data_dirs = set(data_dirs + list(config_dirs.keys()))
     for data_dir in data_dirs:
         added_labels = config_dirs.get(data_dir, {}).get("labels")

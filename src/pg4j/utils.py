@@ -1,175 +1,79 @@
+#   Copyright 2021 Modelyst LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 import re
-from pathlib import Path
 from typing import Callable, List
 
-from sqlalchemy import ForeignKey as SAForeignKey
-from sqlalchemy import MetaData, Table, create_engine
-from sqlalchemy.sql import sqltypes
-import sqlalchemy.dialects.postgresql as pg
-from sqlalchemy.engine import Engine, url
-from psycopg2.extensions import parse_dsn
+# Text helpers
 
-from .classes import ForeignKey
-
-FILTER_FUNC_TYPE = Callable[[str], bool]
+camel_regex = re.compile(r"(?<!^)(?=[A-Z])")
 
 
-def get_conn(dsn: str, password: str = None):
-    parsed_dsn = parse_dsn(dsn)
-    new_url = url.URL(
-        "postgresql+psycopg2",
-        username=parsed_dsn["user"],
-        host=parsed_dsn["host"],
-        port=parsed_dsn.get("port", 5432),
-        database=parsed_dsn["dbname"],
-        password=password,
-    )
-
-    engine = create_engine(new_url)
-    engine.connect()
-    return engine
-
-
-def snake_to_camel(string: str, first_capital: bool = False):
+def snake_to_camel(string: str, first_capital: bool = False) -> str:
     first, *after = string.split("_")
     output = first.capitalize() if first_capital else first
     return output + "".join(map(lambda x: x.capitalize(), after))
 
 
-def read_schema(engine: Engine, schema: str):
-    metadata = MetaData()
-    metadata.reflect(bind=engine, schema=schema)
-    return metadata
+def camel_to_snake(string: str) -> str:
+    return camel_regex.sub("_", string)
 
 
-def parse_table(
-    table: Table,
-    exclude_filter_func: FILTER_FUNC_TYPE,
-    include_filter_func: FILTER_FUNC_TYPE,
-) -> dict:
-    primary_keys = [key.name for key in table.primary_key]
-    if len(primary_keys) > 1:
-        raise NotImplementedError("Haven't dealt with composite keys yet")
-    basic_cols = [
-        col
-        for col in table.columns
-        if not col.primary_key
-        and not col.foreign_keys
-        and include_filter_func(col.name)
-        and not exclude_filter_func(col.name)
-    ]
-    foreign_keys = [
-        parse_foreign_key(list(col.foreign_keys)[0])
-        for col in table.columns
-        if col.foreign_keys
-    ]
-    mapping_table = len(foreign_keys) == 2
-    print(f"Table Name: {table.name}")
-    print(f"Foriegn Keys: {foreign_keys}")
-    print(f"Cols: {basic_cols}")
-    print(f"Mapping Table: {mapping_table}")
-    print("######")
-
-
-def parse_foreign_key(foreign_key: SAForeignKey) -> ForeignKey:
-    target_column = foreign_key.column
-    target_table = target_column.table
-    source_column = foreign_key.parent
-    source_table = source_column.table
-    fk = ForeignKey(
-        source_table.name, source_column.name, target_table.name, target_column.name
-    )
-    return fk
-
-
-def dump_query(query: str, engine: Engine, path: Path):
-    # set up our database connection.
-    conn = engine.raw_connection()
-    with conn.cursor() as cursor:
-
-        # Use the COPY function on the SQL we created above.
-        SQL_for_file_output = f"COPY ({query}) TO STDOUT WITH CSV HEADER"
-        # Set up a variable to store our file path and name.
-        with open(path, "w") as f_output:
-            cursor.copy_expert(SQL_for_file_output, f_output)
+FILTER_FUNC_TYPE = Callable[[str], bool]
 
 
 def filters_to_filter_func(list_of_filters: List[str]) -> FILTER_FUNC_TYPE:
     # Compile filter func
-    filter_func = lambda x: any(
-        map(lambda pattern: re.findall(pattern, x), list_of_filters)
-    )
+    filter_func = lambda x: any(map(lambda pattern: re.findall(pattern, x), list_of_filters))
     return filter_func
 
 
-# Map Postgres types to neo4j type strings
-# !TODO! Add all possible postgres types
-PG_TO_NEO4J_TYPE_MAP = {
-    sqltypes.INTEGER: "int",
-    sqltypes.BIGINT: "long",
-    sqltypes.NUMERIC: "float",
-    sqltypes.DECIMAL: "float",
-    sqltypes.BOOLEAN: "boolean",
-    sqltypes.BINARY: "byte",
-    sqltypes.VARCHAR: "string",
-    sqltypes.TEXT: "string",
-    sqltypes.DATE: "date",
-    sqltypes.DATETIME: "datetime",
-    sqltypes.DateTime: "datetime",
-    sqltypes.TIMESTAMP: "string",
-    pg.base.TIMESTAMP: "string",
-    pg.base.BIGINT: "long",
-    pg.json.JSON: "string",
-    pg.json.JSONB: "string",
-}
+# def parse_table(
+#     table: Table,
+#     exclude_filter_func: FILTER_FUNC_TYPE,
+#     include_filter_func: FILTER_FUNC_TYPE,
+# ) -> dict:
+#     primary_keys = [key.name for key in table.primary_key]
+#     if len(primary_keys) > 1:
+#         raise NotImplementedError("Haven't dealt with composite keys yet")
+#     basic_cols = [
+#         col
+#         for col in table.columns
+#         if not col.primary_key
+#         and not col.foreign_keys
+#         and include_filter_func(col.name)
+#         and not exclude_filter_func(col.name)
+#     ]
+#     foreign_keys = [
+#         parse_foreign_key(list(col.foreign_keys)[0])
+#         for col in table.columns
+#         if col.foreign_keys
+#     ]
+#     mapping_table = len(foreign_keys) == 2
+#     print(f"Table Name: {table.name}")
+#     print(f"Foriegn Keys: {foreign_keys}")
+#     print(f"Cols: {basic_cols}")
+#     print(f"Mapping Table: {mapping_table}")
+#     print("######")
 
-ALL_SQL_TYPES = [
-    sqltypes.ARRAY,
-    sqltypes.BIGINT,
-    sqltypes.BigInteger,
-    sqltypes.BINARY,
-    sqltypes.BLOB,
-    sqltypes.BOOLEAN,
-    sqltypes.Boolean,
-    sqltypes.CHAR,
-    sqltypes.CLOB,
-    sqltypes.Concatenable,
-    sqltypes.DATE,
-    sqltypes.Date,
-    sqltypes.DATETIME,
-    sqltypes.DateTime,
-    sqltypes.DECIMAL,
-    sqltypes.Enum,
-    sqltypes.FLOAT,
-    sqltypes.Float,
-    sqltypes.Indexable,
-    sqltypes.INT,
-    sqltypes.INTEGER,
-    sqltypes.Integer,
-    sqltypes.Interval,
-    sqltypes.JSON,
-    sqltypes.LargeBinary,
-    sqltypes.MatchType,
-    sqltypes.NCHAR,
-    sqltypes.NULLTYPE,
-    sqltypes.NullType,
-    sqltypes.NUMERIC,
-    sqltypes.Numeric,
-    sqltypes.NVARCHAR,
-    sqltypes.PickleType,
-    sqltypes.REAL,
-    sqltypes.SchemaType,
-    sqltypes.SMALLINT,
-    sqltypes.SmallInteger,
-    sqltypes.String,
-    sqltypes.STRINGTYPE,
-    sqltypes.TEXT,
-    sqltypes.Text,
-    sqltypes.TIME,
-    sqltypes.Time,
-    sqltypes.TIMESTAMP,
-    sqltypes.Unicode,
-    sqltypes.UnicodeText,
-    sqltypes.VARBINARY,
-    sqltypes.VARCHAR,
-]
+
+# def parse_foreign_key(foreign_key: SAForeignKey) -> ForeignKey:
+#     target_column = foreign_key.column
+#     target_table = target_column.table
+#     source_column = foreign_key.parent
+#     source_table = source_column.table
+#     fk = ForeignKey(
+#         source_table.name, source_column.name, target_table.name, target_column.name
+#     )
+#     return fk

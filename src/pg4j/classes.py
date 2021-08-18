@@ -1,17 +1,30 @@
+#   Copyright 2021 Modelyst LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 import dataclasses
 from collections.abc import Collection
 from json import dumps
-from typing import ForwardRef, List
+from typing import Dict, List
 
 from sqlalchemy import Column as SAColumn
 from sqlalchemy import ForeignKey as SAForeignKey
 from sqlalchemy import Table as SATable
-from sqlalchemy import select, cast
-from sqlalchemy import Text
+from sqlalchemy import Text, cast, select
 from sqlalchemy.sql.expression import literal_column
 from sqlalchemy.sql.schema import MetaData
 
-ForeignKey = ForwardRef("ForiegnKey")
+from pg4j.utils import camel_to_snake, snake_to_camel
 
 
 def dataclass_dict(thing):
@@ -68,9 +81,7 @@ class Column(Base):
 
     @classmethod
     def from_sqlalchemy(cls, col: SAColumn) -> "Column":
-        return cls(
-            name=col.name, dtype=col.type.__visit_name__, index=col.index, sa_col=col
-        )
+        return cls(name=col.name, dtype=col.type.__visit_name__, index=col.index, sa_col=col)
 
 
 @dataclasses.dataclass
@@ -82,6 +93,49 @@ class PrimaryKey(Base):
     @classmethod
     def from_sqlalchemy(cls, col: SAColumn) -> "PrimaryKey":
         return cls(name=col.name, dtype=col.type.__visit_name__, sa_col=col)
+
+
+@dataclasses.dataclass
+class ForeignKey(Base):
+    source_table: str
+    source_column: str
+    source_schema: str
+    target_table: str
+    target_column: str
+    target_schema: str
+    sa_foreign_key: SAForeignKey
+
+    @classmethod
+    def from_sqlalchemy(cls, sa_foreign_key: SAForeignKey) -> "ForeignKey":
+        target_column = sa_foreign_key.column
+        target_table = target_column.table
+        source_column = sa_foreign_key.parent
+        source_table = source_column.table
+        foreign_key = ForeignKey(
+            source_table.name,
+            source_column.name,
+            source_table.schema,
+            target_table.name,
+            target_column.name,
+            target_table.schema,
+            sa_foreign_key=sa_foreign_key,
+        )
+        return foreign_key
+
+    def toSQL(self):
+        target_column = self.sa_foreign_key.column
+        target_table = target_column.table
+        source_column = self.sa_foreign_key.parent
+        source_table = source_column.table
+        return select(
+            [
+                self.sa_foreign_key.parent.table.columns.id.label(
+                    f":START_ID({snake_to_camel(source_table,True)})"
+                ),
+                self.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(self.target_table,True)})"),
+                literal_column("'" + camel_to_snake(target_table).upper() + "'").label(":TYPE"),
+            ]
+        )
 
 
 @dataclasses.dataclass
@@ -106,9 +160,7 @@ class Table(Base):
             if not col.primary_key and not col.foreign_keys
         ]
         foreign_keys = [
-            ForeignKey.from_sqlalchemy(list(col.foreign_keys)[0])
-            for col in table.columns
-            if col.foreign_keys
+            ForeignKey.from_sqlalchemy(list(col.foreign_keys)[0]) for col in table.columns if col.foreign_keys
         ]
 
         return cls(
@@ -135,10 +187,10 @@ class Table(Base):
         metadata: MetaData,
         include_columns_func,
         exclude_columns_func,
-        col_map: dict = None,
-        ignore_mapping: bool = False
+        col_map: Dict[str, str] = None,
+        ignore_mapping: bool = False,
     ) -> str:
-        from .utils import snake_to_camel, PG_TO_NEO4J_TYPE_MAP
+        from pg4j.sql import PG_TO_NEO4J_TYPE_MAP
 
         # alias for columns
         col_map = col_map or {}
@@ -171,12 +223,8 @@ class Table(Base):
                     start.sa_foreign_key.parent.label(
                         f":START_ID({snake_to_camel(start.target_table, True)})"
                     ),
-                    end.sa_foreign_key.parent.label(
-                        f":END_ID({snake_to_camel(end.target_table,True)})"
-                    ),
-                    literal_column(
-                        "'" + snake_to_camel(end.target_table, True).upper() + "'"
-                    ).label(":TYPE"),
+                    end.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(end.target_table,True)})"),
+                    literal_column("'" + camel_to_snake(end.target_table).upper() + "'").label(":TYPE"),
                     *select_cols,
                 ]
             )
@@ -185,54 +233,7 @@ class Table(Base):
                 self.primary_key.sa_col.label(
                     f"{snake_to_camel(self.name)}:ID({snake_to_camel(self.name, True)})"
                 ),
-                literal_column("'" + snake_to_camel(self.name, True) + "'").label(
-                    ":LABEL"
-                ),
+                literal_column("'" + snake_to_camel(self.name, True) + "'").label(":LABEL"),
                 *select_cols,
-            ]
-        )
-
-
-@dataclasses.dataclass
-class ForeignKey(Base):
-    source_table: str
-    source_column: str
-    source_schema: str
-    target_table: str
-    target_column: str
-    target_schema: str
-    sa_foreign_key: SAForeignKey
-
-    @classmethod
-    def from_sqlalchemy(cls, sa_foreign_key: SAForeignKey) -> "ForeignKey":
-        target_column = sa_foreign_key.column
-        target_table = target_column.table
-        source_column = sa_foreign_key.parent
-        source_table = source_column.table
-        foreign_key = ForeignKey(
-            source_table.name,
-            source_column.name,
-            source_table.schema,
-            target_table.name,
-            target_column.name,
-            target_table.schema,
-            sa_foreign_key=sa_foreign_key,
-        )
-        return foreign_key
-
-    def toSQL(self):
-        from .utils import snake_to_camel
-
-        return select(
-            [
-                self.sa_foreign_key.parent.table.columns.id.label(
-                    f":START_ID({snake_to_camel(self.source_table,True)})"
-                ),
-                self.sa_foreign_key.parent.label(
-                    f":END_ID({snake_to_camel(self.target_table,True)})"
-                ),
-                literal_column(
-                    "'" + snake_to_camel(self.target_table, True) + "'"
-                ).label(":TYPE"),
             ]
         )

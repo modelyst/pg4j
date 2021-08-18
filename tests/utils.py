@@ -12,18 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import typer
+from pathlib import Path
 
-from pg4j.dump import dump
-from pg4j.importer import importer
-from pg4j.mapper import mapper
-
-app = typer.Typer()
-
-# Add subcommands
-app.command("map")(mapper)
-app.command("dump")(dump)
-app.command("import")(importer)
-
-# Run App
-app()
+DATA_DIR = Path(__file__).parent / "data"
+CONFIG_DIR = Path(__file__).parent / "data" / "configs"
+CONFIGS = CONFIG_DIR.glob("*.yaml")

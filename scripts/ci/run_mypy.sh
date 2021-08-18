@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #   Copyright 2021 Modelyst LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +13,5 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import typer
-
-from pg4j.dump import dump
-from pg4j.importer import importer
-from pg4j.mapper import mapper
-
-app = typer.Typer()
-
-# Add subcommands
-app.command("map")(mapper)
-app.command("dump")(dump)
-app.command("import")(importer)
-
-# Run App
-app()
+echo "Mypy running on : $1"
+mypy --config setup.cfg $1

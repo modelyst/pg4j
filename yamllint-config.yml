@@ -12,18 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import typer
+---
+extends: default
 
-from pg4j.dump import dump
-from pg4j.importer import importer
-from pg4j.mapper import mapper
-
-app = typer.Typer()
-
-# Add subcommands
-app.command("map")(mapper)
-app.command("dump")(dump)
-app.command("import")(importer)
-
-# Run App
-app()
+rules:
+  line-length:
+    max: 110
