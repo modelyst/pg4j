@@ -136,7 +136,7 @@ class ForeignKey(Base):
                 self.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(target_table.name,True)})"),
                 literal_column("'" + camel_to_snake(target_table.name).upper() + "'").label(":TYPE"),
             ]
-        )
+        ).filter(self.sa_foreign_key.parent != None)
 
 
 @dataclasses.dataclass
@@ -207,6 +207,7 @@ class Table(Base):
                     select_cols.append(cast(col.sa_col.label(alias), Text))
                 else:
                     select_cols.append(col.sa_col.label(alias))
+        mapped_name = col_map.get("_alias")
 
         if not ignore_mapping and self.is_mapping_table(metadata):
             start, end = self.foreign_keys
@@ -217,23 +218,24 @@ class Table(Base):
                 temp = start
                 start = end
                 end = temp
-
+            edge_type = mapped_name or camel_to_snake(end.target_table).upper()
             return select(
                 [
                     start.sa_foreign_key.parent.label(
                         f":START_ID({snake_to_camel(start.target_table, True)})"
                     ),
                     end.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(end.target_table,True)})"),
-                    literal_column("'" + camel_to_snake(end.target_table).upper() + "'").label(":TYPE"),
+                    literal_column("'" + edge_type + "'").label(":TYPE"),
                     *select_cols,
                 ]
             )
+        label = mapped_name or snake_to_camel(self.name, True)
         return select(
             [
                 self.primary_key.sa_col.label(
                     f"{snake_to_camel(self.name)}:ID({snake_to_camel(self.name, True)})"
                 ),
-                literal_column("'" + snake_to_camel(self.name, True) + "'").label(":LABEL"),
+                literal_column("'" + label + "'").label(":LABEL"),
                 *select_cols,
             ]
         )

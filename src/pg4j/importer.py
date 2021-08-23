@@ -17,6 +17,8 @@ import subprocess
 from pathlib import Path
 from typing import List
 
+import typer
+
 from pg4j.cli.typer_options import (
     CONFIG_OPTION,
     FILE_INCLUDE_FILTERS_OPTION,
@@ -84,7 +86,7 @@ def importer(
             if overwrite:
                 shutil.rmtree(pth)
             else:
-                raise
+                raise typer.BadParameter(f"{pth} already exists need to run with --overwrite to overwrite")
     import_output = subprocess.check_output(import_cmd)
     print(import_output.decode().strip())
     print("######")
