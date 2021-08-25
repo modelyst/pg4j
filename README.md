@@ -55,7 +55,7 @@ pip install pg4j
 For development purposes pg4j can be obtained from [github](https://github.com/modelyst/pg4j). This is best done by using the [poetry](https://python-poetry.org/) package manager. To do this, first clone the repo to a local directory. Then use the command `poetry install` in the directory to install the required dependencies. You will need at least python 3.7 to install the package.
 
 ```Bash
-{!../docs_src/installation/git_installation.sh!}
+{!./docs_src/installation/git_installation.sh!}
 ```
 
 #### Reporting bugs
