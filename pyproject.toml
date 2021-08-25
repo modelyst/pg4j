@@ -11,7 +11,7 @@ name = "pg4j"
 packages = [
   {include = "pg4j", from = "src"},
 ]
-version = "0.0.1"
+version = "0.0.2"
 
 [tool.poetry.dependencies]
 PyYAML = "^5.4.1"
@@ -22,22 +22,25 @@ mkdocs-autorefs = {version = "^0.1.1", optional = true}
 mkdocs-markdownextradata-plugin = {version = "^0.2.4", optional = true}
 mkdocs-material = {version = "^7.0.6", optional = true}
 mkdocstrings = {version = "^0.15.0", optional = true}
+pdocs = {version = "^1.1.1", optional = true, extras = ["docs"]}
 pre-commit = "^2.14.0"
 psycopg2-binary = "^2.9.1"
+pydantic = {version = "^1.8.2", extras = ["dotenv"]}
 pymdown-extensions = {version = "^8.2", optional = true}
 python = ">=3.7,<4.0"
 typer = "^0.3.2"
 types-PyYAML = "^5.4.6"
-pdocs = {version = "^1.1.1", optional = true, extras = ["docs"]}
-pydantic = {version = "^1.8.2", extras = ["dotenv"]}
 
 [tool.poetry.dev-dependencies]
 GitPython = "^3.1.20"
 black = "^21.7b0"
 flake8 = "^3.9.2"
+hypothesis = "^6.15.0"
 mypy = "^0.910"
 pytest = "^6.2.4"
-hypothesis = "^6.15.0"
+
+[tool.poetry.scripts]
+pg4j = "pg4j.__main__:app"
 
 [tool.poetry.extras]
 docs = [

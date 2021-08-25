@@ -14,5 +14,11 @@
 
 from pg4j.cli.main import app
 
+
+def main():
+    app()
+
+
 # Run App
-app()
+if __name__ == '__main__':
+    main()
