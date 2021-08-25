@@ -14,10 +14,10 @@
    limitations under the License.
  -->
 
-# Pg4j
+# pg4j
 
 <p align="center">
-  <a href="https://pg4j.modelyst.com"><img src="img/pg4j_logo.png" alt="Pg4j"></a>
+  <a href="https://www.pg4j.modelyst.com"><img src="img/pg4j_logo.png" alt="pg4j"></a>
 </p>
 ---
 
@@ -27,18 +27,22 @@
 
 ---
 
-Pg4j is a package designed to perform etl from a postgres database to a neo4j database.
+pg4j is a package designed to perform etl from a postgres database to a neo4j database.
 
-1.  Very easy to work with
-2.  Integration with the PostgreSQL databases.
+pg4j was written to expedite the creation of neo4j graph databases from postgresql databases by leveraging the information stored in the postgresql schema. While there does exist a [neo4j-etl](https://neo4j.com/labs/etl-tool/) tool does exist, it is written primarily in java and not open-source. In contrast, pg4j was meant to be a fully open-source python package for interacting with postgresql and neo4j databases.
 
-Pg4j was initially developed by [Modelyst](https://www.modelyst.com/).
+## pg4j Feautures
 
-## What is Pg4j?
+The key features of pg4j:
 
-## What isn't Pg4j?
+1.  Automatic mapping of a postgresql schema to nodes, edges in neo4j
+2.  Simple customization of the mapping between postgresql and neo4j entities
+3.  Utilizes the well-tested [sqlalchemy](https://www.sqlalchemy.org/) package to allow for future interactions with all SQL type databases.
+4.  The use of custom SQL for creation of entities in neo4j
 
-## Getting Pg4j
+pg4j was initially developed by [Modelyst](https://www.modelyst.com/).
+
+## Getting pg4j
 
 ### Via Pip (Recommended)
 
@@ -54,16 +58,11 @@ For development purposes pg4j can be obtained from [github](https://github.com/m
 {!../docs_src/installation/git_installation.sh!}
 ```
 
-### API documentation
-
-Documentation of modules and classes can be found in
-API docs \</modules\>.
-
 #### Reporting bugs
 
-Please report any bugs and issues at Pg4j's [Github Issues
+Please report any bugs and issues at pg4j's [Github Issues
 page](https://github.com/modelyst/pg4j/issues).
 
 ## License
 
-Pg4j is released under the [Apache 2.0 License](license/).
+pg4j is released under the [Apache 2.0 License](license/).

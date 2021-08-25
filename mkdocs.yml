@@ -25,6 +25,7 @@ theme:
     text: Roboto
   palette:
     - scheme: default
+      accent: indigo
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
@@ -74,21 +75,22 @@ nav:
   - Installation: installation.md
   - Configuration: configuration.md
   - License: license.md
-  - Reference:
-      - pg4j:
-          - Package Contents: reference/pg4j/index.md
-          - pg4j.classes: reference/pg4j/classes.md
-          - pg4j.cli:
-              - Module Contents: reference/pg4j/cli/index.md
-              - pg4j.cli.styles: reference/pg4j/cli/styles.md
-              - pg4j.cli.typer_options: reference/pg4j/cli/typer_options.md
-          - pg4j.config: reference/pg4j/config.md
-          - pg4j.dump: reference/pg4j/dump.md
-          - pg4j.importer: reference/pg4j/importer.md
-          - pg4j.mapper: reference/pg4j/mapper.md
-          - pg4j.sql: reference/pg4j/sql.md
-          - pg4j.utils: reference/pg4j/utils.md
-          - pg4j.version: reference/pg4j/version.md
+  # - Reference:
+  #     - pg4j:
+  #         - Package Contents: reference/pg4j/index.md
+  #         - pg4j.classes: reference/pg4j/classes.md
+  #         - pg4j.cli:
+  #             - Module Contents: reference/pg4j/cli/index.md
+  #             - pg4j.cli.styles: reference/pg4j/cli/styles.md
+  #             - pg4j.cli.typer_options: reference/pg4j/cli/typer_options.md
+  #             - pg4j.cli.dump: reference/pg4j/dump.md
+  #             - pg4j.cli.importer: reference/pg4j/importer.md
+  #         - pg4j.inputs: reference/pg4j/inputs.md
+  #         - pg4j.mapper: reference/pg4j/mapper.md
+  #         - pg4j.settings: reference/pg4j/settings.md
+  #         - pg4j.sql: reference/pg4j/sql.md
+  #         - pg4j.utils: reference/pg4j/utils.md
+  #         - pg4j.version: reference/pg4j/version.md
 extra_css:
   - css/termynal.css
   - css/custom.css
