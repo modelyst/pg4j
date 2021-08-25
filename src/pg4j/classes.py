@@ -15,7 +15,7 @@
 import dataclasses
 from collections.abc import Collection
 from json import dumps
-from typing import Dict, List
+from typing import List
 
 from sqlalchemy import Column as SAColumn
 from sqlalchemy import ForeignKey as SAForeignKey
@@ -24,6 +24,7 @@ from sqlalchemy import Text, cast, select
 from sqlalchemy.sql.expression import literal_column
 from sqlalchemy.sql.schema import MetaData
 
+from pg4j.inputs import TableMap
 from pg4j.sql import PG_TO_NEO4J_TYPE_MAP
 from pg4j.utils import camel_to_snake, snake_to_camel
 
@@ -128,7 +129,7 @@ class ForeignKey(Base):
         target_table = target_column.table
         source_column = self.sa_foreign_key.parent
         source_table = source_column.table
-        return select(
+        return select(  # type: ignore
             [
                 self.sa_foreign_key.parent.table.columns.id.label(
                     f":START_ID({snake_to_camel(source_table.name,True)})"
@@ -136,7 +137,9 @@ class ForeignKey(Base):
                 self.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(target_table.name,True)})"),
                 literal_column("'" + camel_to_snake(target_table.name).upper() + "'").label(":TYPE"),
             ]
-        ).filter(self.sa_foreign_key.parent != None)
+        ).filter(
+            self.sa_foreign_key.parent != None  # type: ignore
+        )  # type: ignore
 
 
 @dataclasses.dataclass
@@ -188,28 +191,38 @@ class Table(Base):
         metadata: MetaData,
         include_columns_func,
         exclude_columns_func,
-        col_map: Dict[str, str] = None,
-        ignore_mapping: bool = False,
+        table_map: TableMap,
+        ignore_mapping: bool,
     ) -> str:
 
         # alias for columns
-        col_map = col_map or {}
+        table_map = table_map or TableMap(name=self.name)
+        mapped_name = table_map.alias or self.name
+
+        def check_column(column_name: str) -> bool:
+            """Check if column should be filtered"""
+            return (
+                include_columns_func(col.name)
+                and not exclude_columns_func(col.name)
+                and col.name not in table_map.exclude
+                and (col.name in table_map.include or not table_map.include)
+            )
+
         select_cols = []
         for col in self.columns:
-            if include_columns_func(col.name) and not exclude_columns_func(col.name):
+            if check_column(col.name):
                 type_string = PG_TO_NEO4J_TYPE_MAP.get(type(col.sa_col.type), "string")
 
                 if type(col.sa_col.type) not in PG_TO_NEO4J_TYPE_MAP:
                     print(f"No type mapping for type: {type(col.sa_col.type)}")
-                col_name = col_map.get(col.name, col.name)
+                col_name = table_map.column_map.get(col.name, col.name)
                 alias = f"{col_name}:{type_string}"
                 if isinstance(col.sa_col.type, ()):
                     select_cols.append(cast(col.sa_col.label(alias), Text))
                 else:
                     select_cols.append(col.sa_col.label(alias))
-        mapped_name = col_map.get("_alias")
 
-        if not ignore_mapping and self.is_mapping_table(metadata):
+        if not ignore_mapping and not table_map.ignore_mapping and self.is_mapping_table(metadata):
             start, end = self.foreign_keys
             # Convention for mapping table is STARTTABLE__END_TABLE
             # Swap start and end if the table name begins with the ends table_name
@@ -219,23 +232,25 @@ class Table(Base):
                 start = end
                 end = temp
             edge_type = mapped_name or camel_to_snake(end.target_table).upper()
+            full_label = ":".join([edge_type, *table_map.added_labels])
             return select(
                 [
                     start.sa_foreign_key.parent.label(
                         f":START_ID({snake_to_camel(start.target_table, True)})"
                     ),
                     end.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(end.target_table,True)})"),
-                    literal_column("'" + edge_type + "'").label(":TYPE"),
+                    literal_column("'" + full_label + "'").label(":TYPE"),
                     *select_cols,
                 ]
             )
         label = mapped_name or snake_to_camel(self.name, True)
+        full_label = ":".join([label, *table_map.added_labels])
         return select(
             [
                 self.primary_key.sa_col.label(
                     f"{snake_to_camel(self.name)}:ID({snake_to_camel(self.name, True)})"
                 ),
-                literal_column("'" + label + "'").label(":LABEL"),
+                literal_column("'" + full_label + "'").label(":LABEL"),
                 *select_cols,
             ]
         )

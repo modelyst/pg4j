@@ -17,11 +17,17 @@ import typer
 from pg4j import PRINT_LOGO
 
 THEME_COLOR = typer.colors.BRIGHT_MAGENTA
-delimiter = lambda: typer.echo(typer.style("-----------------------------------", fg=THEME_COLOR, bold=True))
+
+
+def delimiter(color: str = THEME_COLOR):
+    typer.echo(typer.style("-----------------------------------", fg=color, bold=True))
+
+
 LOGO_STYLE = typer.style(PRINT_LOGO, blink=True, fg=THEME_COLOR)
 # Easy printers
 typer_print = lambda color: lambda msg: typer.echo(typer.style(msg, fg=color))
 good_typer_print = typer_print(typer.colors.GREEN)
 bad_typer_print = typer_print(typer.colors.RED)
+theme_typer_print = typer_print(THEME_COLOR)
 greens = lambda x: typer.style(x, fg=typer.colors.BRIGHT_GREEN)
 reds = lambda x: typer.style(x, fg=typer.colors.BRIGHT_RED)

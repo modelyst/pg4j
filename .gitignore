@@ -129,4 +129,6 @@ dmypy.json
 .pyre/
 
 data/
+!tests/data/
 .vscode
+output/

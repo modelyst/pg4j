@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 import re
-from typing import Callable, List
+from typing import Callable, Set
 
 # Text helpers
 
@@ -33,9 +33,9 @@ def camel_to_snake(string: str) -> str:
 FILTER_FUNC_TYPE = Callable[[str], bool]
 
 
-def filters_to_filter_func(list_of_filters: List[str]) -> FILTER_FUNC_TYPE:
+def filters_to_filter_func(set_of_filters: Set[str]) -> FILTER_FUNC_TYPE:
     # Compile filter func
-    filter_func = lambda x: any(map(lambda pattern: re.findall(pattern, x), list_of_filters))
+    filter_func = lambda x: any(map(lambda pattern: re.findall(pattern, x), set_of_filters))
     return filter_func
 
 

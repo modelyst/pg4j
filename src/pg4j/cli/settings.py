@@ -12,17 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import typer
+from pathlib import Path
 
-from pg4j.cli.settings import show_settings
-from pg4j.cli.typer_options import version_callback
-from pg4j.dump import dump
-from pg4j.importer import importer
+from pg4j.cli.typer_options import SETTINGS_OPTION
+from pg4j.settings import Pg4jSettings
 
-app = typer.Typer()
 
-# Add subcommands
-app.command("dump", short_help="Dump a postgres DB to a data directory.")(dump)
-app.command("import", short_help="Import pg4j data directories into neo4j.")(importer)
-app.command("version", short_help="Display pg4j version info.")(lambda: version_callback(True))
-app.command("settings", short_help="Display pg4j settings info.")(show_settings)
+def show_settings(settings_file: Path = SETTINGS_OPTION, show_passwords: bool = False):
+    print(Pg4jSettings(_env_file=settings_file).display(show_passwords))  # type: ignore

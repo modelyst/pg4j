@@ -15,25 +15,26 @@
 from pathlib import Path
 
 import sqlalchemy.dialects.postgresql as pg
-from psycopg2.extensions import parse_dsn
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.engine import Engine, url
 from sqlalchemy.sql import sqltypes
 
+from pg4j.settings import PostgresqlDsn
 
-def get_conn(dsn: str, password: str = None):
-    parsed_dsn = parse_dsn(dsn)
-    new_url = url.URL(
-        "postgresql+psycopg2",
-        username=parsed_dsn["user"],
-        host=parsed_dsn["host"],
-        port=parsed_dsn.get("port", 5432),
-        database=parsed_dsn["dbname"],
-        password=password,
+
+def get_conn(dsn: PostgresqlDsn, password: str = None, connect: bool = True):
+    new_url = url.URL.create(
+        dsn.scheme,
+        username=dsn.user,
+        host=dsn.host,
+        port=dsn.port,
+        database=dsn.path.lstrip("/"),
+        password=password or dsn.password,
     )
 
     engine = create_engine(new_url)
-    engine.connect()
+    if connect:
+        engine.connect()
     return engine
 
 

@@ -17,13 +17,13 @@ site_name: pg4j
 site_description: pg4j framework, high performance, easy to learn, fast to code, ready for production
 site_url: https://www.pg4j.modelyst.com/
 edit_uri: ""
-copyright: "© 2020, Modelyst LLC. All rights reserved."
+copyright: "© 2021, Modelyst LLC. All rights reserved."
 theme:
   name: material
   custom_dir: docs/overrides
   font:
     text: Roboto
-  palette~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:
+  palette:
     - scheme: default
       toggle:
         icon: material/weather-night
@@ -72,6 +72,7 @@ nav:
   - pg4j: index.md
   - Getting Started: usage.md
   - Installation: installation.md
+  - Configuration: configuration.md
   - License: license.md
   - Reference:
       - pg4j:

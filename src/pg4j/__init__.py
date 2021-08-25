@@ -36,4 +36,5 @@ PRINT_LOGO = f"""
 --------------------------{LOGO}--------------------------
 VERSION: {version}
 GITVERSION: {git_version}
+--------------------------
 """
