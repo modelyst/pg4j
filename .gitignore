@@ -132,4 +132,4 @@ data/
 !tests/data/
 .vscode
 output/
-git_version
+src/pg4j/git_version
