@@ -3,5 +3,5 @@ include requirements*.txt
 include src/dbgen/git_version
 # Documentation files
 include mkdocs.yml
-include poetry.toml
+include pyproject.toml
 graft docs

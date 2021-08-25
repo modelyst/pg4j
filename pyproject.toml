@@ -11,7 +11,7 @@ name = "pg4j"
 packages = [
   {include = "pg4j", from = "src"},
 ]
-version = "0.0.2"
+version = "0.0.3"
 
 [tool.poetry.dependencies]
 PyYAML = "^5.4.1"
