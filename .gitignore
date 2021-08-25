@@ -129,3 +129,7 @@ dmypy.json
 .pyre/
 
 data/
+!tests/data/
+.vscode
+output/
+src/pg4j/git_version

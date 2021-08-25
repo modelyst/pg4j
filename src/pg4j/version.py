@@ -12,29 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Welcome to pg4j"""
+__all__ = ["version"]
+from os.path import dirname, exists, join
 
-from pg4j.version import git_version, version
+version = "0.0.3"
 
-__author__ = "Modelyst LLC"
-__email__ = "info@modelyst.io"
-__maintainer__ = "Michael Statt"
-__maintainer_email__ = "michael.statt@modelyst.io"
-__version__ = version
-__gitversion__ = git_version
-
-LOGO = r"""
-                 __ __  _
-    ____  ____ _/ // / (_)
-   / __ \/ __ `/ // /_/ /
-  / /_/ / /_/ /__  __/ /
- / .___/\__, /  /_/_/ /
-/_/    /____/    /___/
-"""
-
-PRINT_LOGO = f"""
---------------------------{LOGO}--------------------------
-VERSION: {version}
-GITVERSION: {git_version}
---------------------------
-"""
+try:
+    curr_dir = dirname(__file__)
+    git_ver_file = join(curr_dir, "git_version")
+    if exists(git_ver_file):
+        with open(git_ver_file) as f:
+            git_version: str = f.read().strip()
+    else:
+        git_version = ""
+except FileNotFoundError:
+    git_version = ""

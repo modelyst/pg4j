@@ -12,29 +12,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Welcome to pg4j"""
+import typer
 
-from pg4j.version import git_version, version
+from pg4j.cli.settings import show_settings
+from pg4j.cli.typer_options import version_callback
+from pg4j.dump import dump
+from pg4j.importer import importer
 
-__author__ = "Modelyst LLC"
-__email__ = "info@modelyst.io"
-__maintainer__ = "Michael Statt"
-__maintainer_email__ = "michael.statt@modelyst.io"
-__version__ = version
-__gitversion__ = git_version
+app = typer.Typer()
 
-LOGO = r"""
-                 __ __  _
-    ____  ____ _/ // / (_)
-   / __ \/ __ `/ // /_/ /
-  / /_/ / /_/ /__  __/ /
- / .___/\__, /  /_/_/ /
-/_/    /____/    /___/
-"""
-
-PRINT_LOGO = f"""
---------------------------{LOGO}--------------------------
-VERSION: {version}
-GITVERSION: {git_version}
---------------------------
-"""
+# Add subcommands
+app.command("dump", short_help="Dump a postgres DB to a data directory.")(dump)
+app.command("import", short_help="Import pg4j data directories into neo4j.")(importer)
+app.command("version", short_help="Display pg4j version info.")(lambda: version_callback(True))
+app.command("settings", short_help="Display pg4j settings info.")(show_settings)

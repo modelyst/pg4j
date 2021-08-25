@@ -1,3 +1,4 @@
+#!/bin/sh
 #   Copyright 2021 Modelyst LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,29 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Welcome to pg4j"""
-
-from pg4j.version import git_version, version
-
-__author__ = "Modelyst LLC"
-__email__ = "info@modelyst.io"
-__maintainer__ = "Michael Statt"
-__maintainer_email__ = "michael.statt@modelyst.io"
-__version__ = version
-__gitversion__ = git_version
-
-LOGO = r"""
-                 __ __  _
-    ____  ____ _/ // / (_)
-   / __ \/ __ `/ // /_/ /
-  / /_/ / /_/ /__  __/ /
- / .___/\__, /  /_/_/ /
-/_/    /____/    /___/
-"""
-
-PRINT_LOGO = f"""
---------------------------{LOGO}--------------------------
-VERSION: {version}
-GITVERSION: {git_version}
---------------------------
-"""
+# Invalidate
+pdocs as_markdown pg4j -o ./docs/reference -t ./docs/templates --overwrite
+mkdocs build
+aws s3 --profile $1 sync ./site s3://www.pg4j.modelyst.com --region us-west-1
+aws cloudfront --profile $1 create-invalidation --distribution-id E3KZHZFM25DYN2 --paths "/*"

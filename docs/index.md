@@ -17,7 +17,7 @@
 # pg4j
 
 <p align="center">
-  <a href="https://www.pg4j.modelyst.com"><img src="docs/img/pg4j_logo.png" alt="pg4j"></a>
+  <a href="https://www.pg4j.modelyst.com"><img src="img/pg4j_logo.png" alt="pg4j"></a>
 </p>
 ---
 
