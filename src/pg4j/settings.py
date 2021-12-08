@@ -15,7 +15,7 @@
 """For parsing in config YAML."""
 import os
 from textwrap import dedent
-from typing import Dict
+from typing import Dict, Union
 
 # from pydantic.dataclasses import dataclass
 from pydantic import AnyUrl, BaseSettings, PostgresDsn, SecretStr
@@ -39,6 +39,22 @@ class Neo4jDsn(AnyUrl):
         return super().validate_parts(parts)
 
 
+class MySQLDsn(AnyUrl):
+    allowed_schemes = {'mysql'}
+    user_required = True
+    path: str
+
+    @classmethod
+    def validate_parts(cls, parts: Dict[str, str]) -> Dict[str, str]:
+        defaults = {
+            'port': '3306',
+        }
+        for key, value in defaults.items():
+            if not parts[key]:
+                parts[key] = value
+        return super().validate_parts(parts)
+
+
 # Force postgresql schemes for connection for sqlalchemy
 class PostgresqlDsn(PostgresDsn):
     allowed_schemes = {"postgresql"}
@@ -48,7 +64,7 @@ class PostgresqlDsn(PostgresDsn):
 class Pg4jSettings(BaseSettings):
     """Settings for the pg4j, especially database connections."""
 
-    postgres_dsn: PostgresqlDsn = "postgresql://postgres@localhost:5432/pg4j"  # type: ignore
+    postgres_dsn: Union[PostgresqlDsn, MySQLDsn] = "postgresql://postgres@localhost:5432/pg4j"  # type: ignore
     postgres_password: SecretStr = ""  # type: ignore
     postgres_schema: str = "public"
     neo4j_dsn: Neo4jDsn = "neo4j://neo4j@localhost:7687/neo4j"  # type: ignore

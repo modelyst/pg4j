@@ -40,20 +40,39 @@ def get_conn(dsn: PostgresqlDsn, password: str = None, connect: bool = True):
 
 def read_schema(engine: Engine, schema: str):
     metadata = MetaData()
-    metadata.reflect(bind=engine, schema=schema)
+    if engine.url.get_backend_name() == "mysql":
+        metadata.reflect(bind=engine)
+    else:
+        metadata.reflect(bind=engine, schema=schema)
     return metadata
 
 
 def dump_query(query: str, engine: Engine, path: Path):
     # set up our database connection.
-    conn = engine.raw_connection()
-    with conn.cursor() as cursor:
+    backend = engine.url.get_backend_name()
+    if backend == "postgresql":
+        conn = engine.raw_connection()
+        with conn.cursor() as cursor:
 
-        # Use the COPY function on the SQL we created above.
-        SQL_for_file_output = f"COPY ({query}) TO STDOUT WITH CSV HEADER"
-        # Set up a variable to store our file path and name.
-        with open(path, "w") as f_output:
-            cursor.copy_expert(SQL_for_file_output, f_output)
+            # Use the COPY function on the SQL we created above.
+            SQL_for_file_output = f"COPY ({query}) TO STDOUT WITH CSV HEADER"
+            # Set up a variable to store our file path and name.
+            with open(path, "w") as f_output:
+                cursor.copy_expert(SQL_for_file_output, f_output)
+    elif backend == "mysql":
+        print(query)
+        header = False
+        with open(path, 'w') as f:
+            with engine.connect() as connection:
+                results = connection.execute(query)
+                for x in results.yield_per(100):
+                    if not header:
+                        f.write(','.join(x.keys()) + '\n')
+                        header = True
+                    f.write(','.join(map(lambda t: '"' + str(t) + '"', x.values())) + '\n')
+
+    else:
+        raise NotImplementedError(f"unknown backend {backend}")
 
 
 # Map Postgres types to neo4j type strings

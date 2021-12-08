@@ -14,6 +14,7 @@
 
 import shutil
 import subprocess
+from enum import Enum
 from pathlib import Path
 from typing import List, Tuple
 
@@ -32,11 +33,19 @@ from pg4j.utils import filters_to_filter_func
 bad_delimiter = lambda: delimiter(typer.colors.RED)
 
 
+class ID_TYPE(Enum):
+    STRING = "STRING"
+    INTEGER = "INTEGER"
+    ACTUAL = "ACTUAL"
+
+
 def importer(
     data_dirs: List[Path] = PG4J_DATA_DIR_OPTION,
     include_regex: List[str] = FILE_INCLUDE_FILTERS_OPTION,
     neo4j_path: Path = NEO4J_HOME_OPTION,
+    admin_command: str = typer.Option("neo4j-admin", "--command", help="neo4j-admin command"),
     dbname: str = typer.Option("neo4j", "--dbname", "-d", help="Neo4j Database to import into"),
+    id_type: ID_TYPE = typer.Option("STRING", "--id-type", help="Type of the imported node ids"),
     import_path: Path = typer.Option(
         None, "--import-file", help="Input file indicating the directories to be imported"
     ),
@@ -62,9 +71,9 @@ def importer(
 
     # Build the neo4j-admin import command by reading the data_dirs and adding additional labels
     import_cmd = [
-        "neo4j-admin",
+        f"{admin_command}",
         "import",
-        "--id-type=STRING",
+        f"--id-type={id_type.value}",
         "--skip-duplicate-nodes",
         f"--database={dbname}",
     ]
@@ -80,6 +89,9 @@ def importer(
         for subfolder, neo4j_type in zip(subfolders, neo4j_types):
             csv_folder = Path(data_dir) / subfolder
             for fname in csv_folder.iterdir():
+                if fname.stat().st_size <= 10:
+                    print(f"Skipping {fname} as it appears empty...")
+                    continue
                 fname_str = str(fname)
                 assert fname_str.endswith(".csv")
                 if include_filter(str(fname.name)):
@@ -94,7 +106,7 @@ def importer(
 
     # Remove database in Neo4j instance if it previously existed and --overwrite set
     for file_name in ("databases", "transactions"):
-        pth = neo4j_path / file_name / dbname
+        pth = neo4j_path / "data" / file_name / dbname
         if pth.exists():
             if overwrite:
                 shutil.rmtree(pth)

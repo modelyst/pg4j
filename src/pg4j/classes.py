@@ -129,13 +129,21 @@ class ForeignKey(Base):
         target_table = target_column.table
         source_column = self.sa_foreign_key.parent
         source_table = source_column.table
+        pks = source_table.primary_key.columns
+        if len(pks) != 1:
+            raise NotImplementedError(
+                f"Can't automap tables with more than one primary key yet.\n{source_table}"
+            )
+        pk = pks.values()[0]
+
+        start_label = f":START_ID({snake_to_camel(source_table.name,True)})"
+        end_label = f":END_ID({snake_to_camel(target_table.name,True)})"
+        edge_type = "'" + camel_to_snake(target_table.name).upper() + "'"
         return select(  # type: ignore
             [
-                self.sa_foreign_key.parent.table.columns.id.label(
-                    f":START_ID({snake_to_camel(source_table.name,True)})"
-                ),
-                self.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(target_table.name,True)})"),
-                literal_column("'" + camel_to_snake(target_table.name).upper() + "'").label(":TYPE"),
+                pk.label(start_label),
+                source_column.label(end_label),
+                literal_column(edge_type).label(":TYPE"),
             ]
         ).filter(
             self.sa_foreign_key.parent != None  # type: ignore
@@ -196,8 +204,8 @@ class Table(Base):
     ) -> str:
 
         # alias for columns
-        table_map = table_map or TableMap(name=self.name)
-        mapped_name = table_map.alias or self.name
+        table_map = table_map or TableMap(name=snake_to_camel(self.name, True))
+        mapped_name = table_map.alias or snake_to_camel(self.name, True)
 
         def check_column(column_name: str) -> bool:
             """Check if column should be filtered"""

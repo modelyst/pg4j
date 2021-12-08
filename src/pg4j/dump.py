@@ -104,7 +104,7 @@ def dump(
     # If using mapper get the sql statements by mapping the metadata from the engine
     if use_mapper:
         mapping = Pg4jMapping.from_yaml(mapping_input) if mapping_input else Pg4jMapping()
-        sql_stmts = mapper(
+        mapped_sql_stmts = mapper(
             mapping=mapping,
             schema=settings.postgres_schema,
             col_exclude_filters=set(col_exclude_filters),
@@ -114,6 +114,8 @@ def dump(
             engine=engine,
             ignore_mapping=ignore_mapping,
         )
+        sql_stmts["nodes"].update(mapped_sql_stmts["nodes"])
+        sql_stmts["edges"].update(mapped_sql_stmts["edges"])
 
     # Run the sql_stmts against the database and write the results to local CSVs
     try:
