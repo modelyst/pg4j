@@ -50,15 +50,14 @@ def mapper(
 
     mapping = mapping or Pg4jMapping()
     # Compile filter func
-    col_include_filters = col_include_filters.union(mapping.table_include)
-    col_exclude_filters = col_exclude_filters.union(mapping.table_exclude)
+    tab_include_filters = {'.*'} if not mapping.table_include else set(mapping.table_include)
+    tab_exclude_filters = tab_exclude_filters.union(mapping.table_exclude)
     col_include_filters = col_include_filters.union(mapping.column_include)
     col_exclude_filters = col_exclude_filters.union(mapping.column_exclude)
     col_include_filter_func = filters_to_filter_func(col_include_filters)
     col_exclude_filter_func = filters_to_filter_func(col_exclude_filters)
     tab_include_filter_func = filters_to_filter_func(tab_include_filters)
     tab_exclude_filter_func = filters_to_filter_func(tab_exclude_filters)
-
     # Set up sqlalchemy engine if not passed through
     if not engine:
         engine = create_engine(dsn)

@@ -66,10 +66,10 @@ DSN_OPTION = build_typer_option(None)(
 NEO4J_HOME = environ.get("NEO4J_HOME", "/usr/local/var/neo4j/data/")
 NEO4J_HOME_OPTION = build_typer_option(NEO4J_HOME)("Path to neo4j", ["--neo4j-home"], "NEO4J_HOME")
 
-INCLUDE_FILTER = build_typer_option([r".*"])
+INCLUDE_FILTER = build_typer_option([r'.*'])
 XCLUDE_FILTER = build_typer_option([])
 
-COL_INCLUDE_FILTERS_OPTION = INCLUDE_FILTER(
+COL_INCLUDE_FILTERS_OPTION = XCLUDE_FILTER(
     "Only include columns that match these regex filters", ["--col-include", "-ci"], None
 )
 TAB_INCLUDE_FILTERS_OPTION = INCLUDE_FILTER(

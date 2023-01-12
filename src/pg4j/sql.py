@@ -90,6 +90,8 @@ PG_TO_NEO4J_TYPE_MAP = {
     sqltypes.DATETIME: "datetime",
     sqltypes.DateTime: "datetime",
     sqltypes.TIMESTAMP: "string",
+    pg.base.UUID: "string",
+    pg.base.DOUBLE_PRECISION: "long",
     pg.base.TIMESTAMP: "string",
     pg.base.BIGINT: "long",
     pg.json.JSON: "string",
