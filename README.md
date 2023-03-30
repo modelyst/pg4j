@@ -67,6 +67,9 @@ poetry shell
 pg4j version
 ```
 
+#### Neo4j Versioning
+pg4j version >=0.1.0 is compatibable with Neo4j version 5.0
+
 #### Reporting bugs
 
 Please report any bugs and issues at pg4j's [Github Issues
