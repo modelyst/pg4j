@@ -57,7 +57,7 @@ class MySQLDsn(AnyUrl):
 
 # Force postgresql schemes for connection for sqlalchemy
 class PostgresqlDsn(PostgresDsn):
-    allowed_schemes = {"postgresql"}
+    allowed_schemes = {"postgresql","postgresql+psycopg"}
     path: str
 
 

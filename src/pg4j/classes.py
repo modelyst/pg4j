@@ -19,6 +19,7 @@ from typing import List
 
 from sqlalchemy import Column as SAColumn
 from sqlalchemy import ForeignKey as SAForeignKey
+from sqlalchemy import Integer
 from sqlalchemy import Table as SATable
 from sqlalchemy import Text, cast, select
 from sqlalchemy.sql.expression import literal_column
@@ -124,7 +125,10 @@ class ForeignKey(Base):
         )
         return foreign_key
 
-    def toSQL(self):
+    def same_column(self, other: 'ForeignKey'):
+        return other.target_table == self.target_table
+
+    def toSQL(self, use_name: bool = False):
         target_column = self.sa_foreign_key.column
         target_table = target_column.table
         source_column = self.sa_foreign_key.parent
@@ -138,13 +142,14 @@ class ForeignKey(Base):
 
         start_label = f":START_ID({snake_to_camel(source_table.name,True)})"
         end_label = f":END_ID({snake_to_camel(target_table.name,True)})"
-        edge_type = "'" + camel_to_snake(target_table.name).upper() + "'"
+        if use_name:
+            edge_type = "'" + camel_to_snake(source_column.name).upper() + "'"
+        else:
+            edge_type = "'" + camel_to_snake(target_table.name).upper() + "'"
         return select(  # type: ignore
-            [
-                pk.label(start_label),
-                source_column.label(end_label),
-                literal_column(edge_type).label(":TYPE"),
-            ]
+            pk.label(start_label),
+            source_column.label(end_label),
+            literal_column(edge_type).label(":TYPE"),
         ).filter(
             self.sa_foreign_key.parent != None  # type: ignore
         )  # type: ignore
@@ -202,7 +207,6 @@ class Table(Base):
         table_map: TableMap,
         ignore_mapping: bool,
     ) -> str:
-
         # alias for columns
         table_map = table_map or TableMap(name=snake_to_camel(self.name, True))
         mapped_name = table_map.alias or snake_to_camel(self.name, True)
@@ -227,6 +231,8 @@ class Table(Base):
                 alias = f"{col_name}:{type_string}"
                 if isinstance(col.sa_col.type, ()):
                     select_cols.append(cast(col.sa_col.label(alias), Text))
+                elif type_string == 'boolean':
+                    select_cols.append(cast(col.sa_col.label(alias), Text))
                 else:
                     select_cols.append(col.sa_col.label(alias))
 
@@ -239,26 +245,21 @@ class Table(Base):
                 temp = start
                 start = end
                 end = temp
+
             edge_type = mapped_name or camel_to_snake(end.target_table).upper()
             full_label = ":".join([edge_type, *table_map.added_labels])
             return select(
-                [
-                    start.sa_foreign_key.parent.label(
-                        f":START_ID({snake_to_camel(start.target_table, True)})"
-                    ),
-                    end.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(end.target_table,True)})"),
-                    literal_column("'" + full_label + "'").label(":TYPE"),
-                    *select_cols,
-                ]
+                start.sa_foreign_key.parent.label(f":START_ID({snake_to_camel(start.target_table, True)})"),
+                end.sa_foreign_key.parent.label(f":END_ID({snake_to_camel(end.target_table,True)})"),
+                literal_column("'" + full_label + "'").label(":TYPE"),
+                *select_cols,
             )
         label = mapped_name or snake_to_camel(self.name, True)
         full_label = ":".join([label, *table_map.added_labels])
         return select(
-            [
-                self.primary_key.sa_col.label(
-                    f"{snake_to_camel(self.name)}:ID({snake_to_camel(self.name, True)})"
-                ),
-                literal_column("'" + full_label + "'").label(":LABEL"),
-                *select_cols,
-            ]
+            self.primary_key.sa_col.label(
+                f"{snake_to_camel(self.name)}:ID({snake_to_camel(self.name, True)})"
+            ),
+            literal_column("'" + full_label + "'").label(":LABEL"),
+            *select_cols,
         )

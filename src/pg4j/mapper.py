@@ -87,11 +87,13 @@ def mapper(
             if ignore_mapping or not tab.is_mapping_table(metadata) or table_map.ignore_mapping:
                 node_sql_stmts[f"{tab.name}.sql"] = tab_sql
                 for fk in tab.foreign_keys:
+                    multiple_keys = any(map(lambda x: fk.same_column(x),(key for key in tab.foreign_keys if key != fk)))
                     if tab_include_filter_func(fk.target_table) and not tab_exclude_filter_func(
                         fk.target_table
                     ):
-                        edge_sql = fk.toSQL()
-                        edge_sql_stmts[f"{fk.source_table}__{fk.target_table}.sql"] = edge_sql
+                        edge_sql = fk.toSQL(use_name=multiple_keys)
+                        file_name = f"{fk.source_table}__{fk.target_table}.sql" if not multiple_keys else f"{fk.source_table}_{fk.source_column}__{fk.target_table}_{fk.target_column}.sql"
+                        edge_sql_stmts[file_name] = edge_sql
             else:
                 fk_1, fk_2 = tab.foreign_keys
                 if (

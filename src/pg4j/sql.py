@@ -53,7 +53,6 @@ def dump_query(query: str, engine: Engine, path: Path):
     if backend == "postgresql":
         conn = engine.raw_connection()
         with conn.cursor() as cursor:
-
             # Use the COPY function on the SQL we created above.
             SQL_for_file_output = f"COPY ({query}) TO STDOUT WITH CSV HEADER"
             # Set up a variable to store our file path and name.

@@ -72,10 +72,13 @@ def importer(
     # Build the neo4j-admin import command by reading the data_dirs and adding additional labels
     import_cmd = [
         f"{admin_command}",
+        "database",
         "import",
+        "full",
+        dbname,
         f"--id-type={id_type.value}",
         "--skip-duplicate-nodes",
-        f"--database={dbname}",
+        f"--overwrite-destination=true",
     ]
     subfolders = ["nodes", "edges"]
     neo4j_types = ["nodes", "relationships"]
