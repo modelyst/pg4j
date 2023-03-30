@@ -19,7 +19,6 @@ from typing import List
 
 from sqlalchemy import Column as SAColumn
 from sqlalchemy import ForeignKey as SAForeignKey
-from sqlalchemy import Integer
 from sqlalchemy import Table as SATable
 from sqlalchemy import Text, cast, select
 from sqlalchemy.sql.expression import literal_column

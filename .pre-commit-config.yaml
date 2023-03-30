@@ -14,9 +14,6 @@
 
 ---
 default_stages: [commit, push]
-default_language_version:
-  # force all unspecified python hooks to run python3
-  python: python3.8
 minimum_pre_commit_version: "1.20.0"
 repos:
   - repo: meta
@@ -94,8 +91,7 @@ repos:
         name: Check yaml files with yamllint
         entry: yamllint -c yamllint-config.yml --strict
         types: [yaml]
-        exclude:
-          ^.*init_git_sync\.template\.yaml$|^chart/(?:templates|files)/.*\.yaml
+        exclude: ^.*init_git_sync\.template\.yaml$|^chart/(?:templates|files)/.*\.yaml
   - repo: https://github.com/timothycrosley/isort
     rev: 5.7.0
     hooks:
@@ -154,7 +150,7 @@ repos:
         entry: flynt
         language: python
         language_version: python3
-        additional_dependencies: ['flynt']
+        additional_dependencies: ["flynt"]
         files: \.py$
       - id: pytest
         name: Run pytest
