@@ -15,7 +15,7 @@
 __all__ = ["version"]
 from os.path import dirname, exists, join
 
-version = "0.1.0"
+version = "0.1.1"
 
 try:
     curr_dir = dirname(__file__)
