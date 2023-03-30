@@ -13,31 +13,23 @@ packages = [
 ]
 version = "0.0.3"
 
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version = "0.0.3"
+version_files = [
+  "pyproject.toml:version",
+  "src/pg4j/version.py",
+]
+
 [tool.poetry.dependencies]
 PyYAML = "^5.4.1"
 SQLAlchemy = "^1.4.27"
 psycopg2-binary = "^2.9.2"
-pydantic = {version = "^1.8.2", extras = ["dotenv"]}
 python = ">=3.7,<4.0"
 typer = "^0.4.0"
 types-PyYAML = "^5.4.6"
-
-[tool.poetry.dev-dependencies]
-GitPython = "^3.1.20"
-black = "^21.7b0"
-flake8 = "^3.9.2"
-hypothesis = "^6.15.0"
-mypy = "^0.910"
-pytest = "^6.2.4"
-# markdown-include = {version = "0.6.0", optional = true}
-# mkdocs = {version = "^1.1.2", optional = true}
-# mkdocs-autorefs = {version = "^0.1.1", optional = true}
-# mkdocs-markdownextradata-plugin = {version = "^0.2.4", optional = true}
-# mkdocs-material = {version = "^7.0.6", optional = true}
-# mkdocstrings = {version = "^0.15.0", optional = true}
-# pdocs = {version = "^1.1.1", optional = true, extras = ["docs"]}
-# pymdown-extensions = {version = "^8.2", optional = true}
-pre-commit = "^2.15.0"
+pydantic = {version = "^1.10.7", extras = ["dotenv"]}
 
 [tool.poetry.scripts]
 pg4j = "pg4j.__main__:app"
@@ -53,6 +45,16 @@ docs = [
   "mkdocstrings",
   "pdocs",
 ]
+
+[tool.poetry.group.dev.dependencies]
+GitPython = "^3.1.20"
+black = "^21.7b0"
+commitizen = "^2.42.1"
+flake8 = "^3.9.2"
+hypothesis = "^6.15.0"
+mypy = "^0.910"
+pre-commit = "^2.15.0"
+pytest = "^6.2.4"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
